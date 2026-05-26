@@ -486,7 +486,7 @@ export default function App() {
               Chào mừng bạn đến với hệ thống khảo sát phân bào sinh học. Vui lòng khởi tạo biệt danh học viên để mở khóa toàn bộ tài nguyên trên trang web.
             </p>
           </div>
-          <form onSubmit={handleAuth} className="space-y-4">
+          <form onSubmit={handleAuth} action="#" method="post" className="space-y-4">
             <div className="space-y-1 text-left">
               <label className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider pl-1">Tên học viên / Biệt danh</label>
               <input 
@@ -499,7 +499,11 @@ export default function App() {
                 className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-3 rounded-xl text-sm font-bold text-center text-slate-100 transition-all focus:outline-none placeholder-slate-600" 
               />
             </div>
-            <button type="submit" className="w-full bg-gradient-to-r from-teal-400 to-indigo-500 hover:from-teal-300 hover:to-indigo-400 text-slate-950 font-black text-xs uppercase tracking-wider py-3.5 rounded-xl shadow-lg transition-all transform active:scale-98">
+            <button
+              type="button"
+              onClick={(e) => handleAuth(e)}
+              className="w-full bg-gradient-to-r from-teal-400 to-indigo-500 hover:from-teal-300 hover:to-indigo-400 text-slate-950 font-black text-xs uppercase tracking-wider py-3.5 rounded-xl shadow-lg transition-all transform active:scale-98"
+            >
               Kích Hoạt Tài Khoản & Vào Hệ Thống
             </button>
           </form>
