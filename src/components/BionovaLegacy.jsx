@@ -696,10 +696,10 @@ export default function App() {
           </button>
           <div className="flex items-center gap-3 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-xl">
             <div className="text-right">
-              <p className="text-xs font-bold text-teal-400">{currentUser?.username}</p>
+              <p className="text-xs font-bold text-teal-400">{currentUser?.real_name || currentUser?.username} {isAdmin && <span className="text-[9px] bg-amber-500 text-slate-950 px-1 rounded ml-1">ADMIN</span>}</p>
               <p className="text-[10px] text-amber-400 font-bold">🎖️ {currentUser?.title}</p>
             </div>
-            <button onClick={handleLogout} className="text-[10px] bg-rose-500/20 hover:bg-rose-500 text-rose-400 hover:text-slate-950 px-2 py-1 rounded font-bold transition-all">Đổi nick</button>
+            <button onClick={handleLogout} className="text-[10px] bg-rose-500/20 hover:bg-rose-500 text-rose-400 hover:text-slate-950 px-2 py-1 rounded font-bold transition-all">Đăng xuất</button>
           </div>
         </div>
       </header>
