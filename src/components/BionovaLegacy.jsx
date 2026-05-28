@@ -665,8 +665,11 @@ export default function App() {
   const sortedLeaderboard = useMemo(() => [...leaderboard].sort((a, b) => b.score - a.score), [leaderboard]);
   const allVideos = useMemo(() => {
     const admin = (appSettings.videos || []).map(v => ({ topic: 'Admin', thumb: '🎬', duration: '—', ...v }));
-    return [...admin, ...VIDEOS_LIST];
-  }, [appSettings.videos]);
+    const defaults = (appSettings.default_videos && appSettings.default_videos.length > 0)
+      ? appSettings.default_videos
+      : VIDEOS_LIST;
+    return [...admin, ...defaults];
+  }, [appSettings.videos, appSettings.default_videos]);
   
   const wrapperThemeClass = useMemo(() => {
     if (themeStyle === 'ocean') return 'bg-slate-950 text-sky-100';
