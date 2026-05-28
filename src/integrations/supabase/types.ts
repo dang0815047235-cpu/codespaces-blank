@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      accounts: {
+        Row: {
+          badges: Json
+          created_at: string
+          id: string
+          password: string
+          real_name: string
+          role: string
+          score: number
+          title: string
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          badges?: Json
+          created_at?: string
+          id?: string
+          password: string
+          real_name: string
+          role?: string
+          score?: number
+          title?: string
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          badges?: Json
+          created_at?: string
+          id?: string
+          password?: string
+          real_name?: string
+          role?: string
+          score?: number
+          title?: string
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
       app_settings: {
         Row: {
           admin_password: string
