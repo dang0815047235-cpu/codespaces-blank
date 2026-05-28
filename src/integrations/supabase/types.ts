@@ -14,7 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      app_settings: {
+        Row: {
+          admin_password: string
+          id: number
+          music_title: string | null
+          music_url: string | null
+          pdf_name: string | null
+          pdf_url: string | null
+          updated_at: string
+          videos: Json | null
+        }
+        Insert: {
+          admin_password?: string
+          id?: number
+          music_title?: string | null
+          music_url?: string | null
+          pdf_name?: string | null
+          pdf_url?: string | null
+          updated_at?: string
+          videos?: Json | null
+        }
+        Update: {
+          admin_password?: string
+          id?: number
+          music_title?: string | null
+          music_url?: string | null
+          pdf_name?: string | null
+          pdf_url?: string | null
+          updated_at?: string
+          videos?: Json | null
+        }
+        Relationships: []
+      }
+      leaderboard_entries: {
+        Row: {
+          badges: Json
+          id: string
+          score: number
+          title: string
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          badges?: Json
+          id?: string
+          score?: number
+          title?: string
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          badges?: Json
+          id?: string
+          score?: number
+          title?: string
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
