@@ -276,7 +276,7 @@ export default function App() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, () => loadSettings())
       .subscribe();
     const lbCh = supabase.channel('lb_rt')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'leaderboard_entries' }, () => loadLeaderboard())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'accounts' }, () => { loadLeaderboard(); loadAccounts(); })
       .subscribe();
 
     const sessionUser = localStorage.getItem('biotech_current_user');
