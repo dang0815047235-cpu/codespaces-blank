@@ -371,11 +371,11 @@ export default function App() {
   const handleUpdateNickname = async (newName) => {
     if (!newName.trim() || !currentUser) return;
     const name = newName.trim();
-    if (name.toLowerCase() === currentUser.username.toLowerCase()) return;
-    await supabase.from('leaderboard_entries')
-      .update({ username: name })
-      .ilike('username', currentUser.username);
-    const updatedUser = { ...currentUser, username: name };
+    if (name === currentUser.real_name) return;
+    await supabase.from('accounts')
+      .update({ real_name: name, updated_at: new Date().toISOString() })
+      .eq('id', currentUser.id);
+    const updatedUser = { ...currentUser, real_name: name };
     setCurrentUser(updatedUser);
     localStorage.setItem('biotech_current_user', JSON.stringify(updatedUser));
     loadLeaderboard();
@@ -396,9 +396,9 @@ export default function App() {
     const resetUser = { ...currentUser, score: 0, title: GET_TITLE_BY_SCORE(0), badges: ['🧫'] };
     setCurrentUser(resetUser);
     localStorage.setItem('biotech_current_user', JSON.stringify(resetUser));
-    await supabase.from('leaderboard_entries')
-      .update({ score: 0, title: resetUser.title, badges: resetUser.badges })
-      .ilike('username', currentUser.username);
+    await supabase.from('accounts')
+      .update({ score: 0, title: resetUser.title, badges: resetUser.badges, updated_at: new Date().toISOString() })
+      .eq('id', currentUser.id);
     loadLeaderboard();
     restartQuiz();
   };
