@@ -19,6 +19,40 @@ function VideoAdminForm({ onUploadFile, onAddUrl }) {
   );
 }
 
+function isYouTubeUrl(u) {
+  return typeof u === 'string' && /youtube\.com|youtu\.be/i.test(u);
+}
+function toYouTubeEmbed(u) {
+  if (!u) return u;
+  if (/youtube\.com\/embed\//.test(u)) return u;
+  const m1 = u.match(/youtu\.be\/([\w-]+)/);
+  if (m1) return `https://www.youtube.com/embed/${m1[1]}`;
+  const m2 = u.match(/[?&]v=([\w-]+)/);
+  if (m2) return `https://www.youtube.com/embed/${m2[1]}`;
+  return u;
+}
+
+function DefaultVideoRow({ video, onSave, onDelete }) {
+  const [v, setV] = React.useState(video);
+  React.useEffect(() => setV(video), [video]);
+  const dirty = JSON.stringify(v) !== JSON.stringify(video);
+  return (
+    <div className="bg-slate-900 border border-slate-800 rounded-lg p-2 space-y-1">
+      <div className="flex gap-2">
+        <input value={v.title} onChange={(e)=>setV({...v, title:e.target.value})} className="flex-1 bg-slate-950 border border-slate-800 px-2 py-1 rounded text-xs text-slate-100" />
+        <input value={v.topic} onChange={(e)=>setV({...v, topic:e.target.value})} className="w-24 bg-slate-950 border border-slate-800 px-2 py-1 rounded text-xs text-slate-100" />
+      </div>
+      <div className="flex gap-2">
+        <input value={v.url} onChange={(e)=>setV({...v, url:e.target.value})} placeholder="URL (YouTube/mp4)" className="flex-1 bg-slate-950 border border-slate-800 px-2 py-1 rounded text-[11px] text-slate-100" />
+        <input value={v.thumb||''} onChange={(e)=>setV({...v, thumb:e.target.value})} className="w-12 bg-slate-950 border border-slate-800 px-2 py-1 rounded text-xs text-slate-100" />
+        <input value={v.duration||''} onChange={(e)=>setV({...v, duration:e.target.value})} className="w-16 bg-slate-950 border border-slate-800 px-2 py-1 rounded text-[11px] text-slate-100" />
+        <button disabled={!dirty} onClick={()=>onSave(v)} className={`px-2 py-1 rounded text-[11px] font-bold ${dirty?'bg-teal-500 text-slate-950':'bg-slate-800 text-slate-500'}`}>💾</button>
+        <button onClick={()=>onDelete(v.id)} className="px-2 py-1 rounded text-[11px] font-bold bg-rose-500/20 text-rose-400">✕</button>
+      </div>
+    </div>
+  );
+}
+
 // ==========================================================
 // ĐẠI THƯ VIỆN 90 CÂU HỎI TRẮC NGHIỆM CHUYÊN SÂU BIONOVA LEGACY
 // ==========================================================
