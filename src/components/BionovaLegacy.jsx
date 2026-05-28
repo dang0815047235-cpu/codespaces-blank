@@ -901,8 +901,18 @@ export default function App() {
                         }}
                         className={`bg-slate-950 border rounded-xl overflow-hidden group cursor-pointer hover:border-teal-500/50 transition-all ${playingVideoTitle === video.title ? 'border-teal-400 ring-1 ring-teal-400/30' : 'border-slate-800'}`}
                       >
-                        <div className="aspect-video bg-slate-800 relative flex flex-col items-center justify-center">
-                          <span className="text-3xl opacity-60 group-hover:scale-110 transition-transform duration-300">{video.thumb}</span>
+                        <div className="aspect-video bg-slate-800 relative flex flex-col items-center justify-center overflow-hidden">
+                          {isYouTubeUrl(video.url) ? (
+                            (() => {
+                              const m = toYouTubeEmbed(video.url).match(/embed\/([\w-]+)/);
+                              const id = m?.[1];
+                              return id ? (
+                                <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt={video.title} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition" loading="lazy" />
+                              ) : <span className="text-3xl opacity-60">{video.thumb}</span>;
+                            })()
+                          ) : (
+                            <span className="text-3xl opacity-60 group-hover:scale-110 transition-transform duration-300">{video.thumb}</span>
+                          )}
                           <div className="absolute bottom-1 right-1 bg-black/80 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold">{video.duration}</div>
                           <div className="absolute inset-0 bg-teal-500/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                             <div className="w-9 h-9 bg-teal-400 text-slate-950 rounded-full flex items-center justify-center pl-0.5 text-xs font-bold shadow-lg">▶ Xem</div>
