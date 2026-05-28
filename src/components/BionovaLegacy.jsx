@@ -396,6 +396,75 @@ export default function App() {
     }
   };
 
+  // =================== ADMIN FUNCTIONS ===================
+  const handleAdminLogin = (e) => {
+    e.preventDefault();
+    if (adminPwdInput === appSettings.admin_password) {
+      setIsAdmin(true);
+      setAdminMsg('✅ Đăng nhập admin thành công');
+    } else {
+      setAdminMsg('❌ Sai mật khẩu admin');
+    }
+  };
+
+  const uploadToStorage = async (file, prefix) => {
+    const ext = file.name.split('.').pop();
+    const path = `${prefix}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const { error } = await supabase.storage.from('media').upload(path, file, { upsert: false, contentType: file.type });
+    if (error) throw error;
+    const { data } = supabase.storage.from('media').getPublicUrl(path);
+    return data.publicUrl;
+  };
+
+  const handleUploadMusic = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingMusic(true); setAdminMsg('⏳ Đang tải nhạc lên...');
+    try {
+      const url = await uploadToStorage(file, 'music');
+      await supabase.from('app_settings').update({ music_url: url, music_title: file.name, updated_at: new Date().toISOString() }).eq('id', 1);
+      await loadSettings();
+      setAdminMsg('✅ Nhạc nền đã cập nhật cho tất cả người dùng');
+    } catch (err) { setAdminMsg('❌ Lỗi: ' + err.message); }
+    setUploadingMusic(false);
+  };
+
+  const handleUploadPdf = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingPdf(true); setAdminMsg('⏳ Đang tải PDF lên...');
+    try {
+      const url = await uploadToStorage(file, 'pdf');
+      await supabase.from('app_settings').update({ pdf_url: url, pdf_name: file.name, updated_at: new Date().toISOString() }).eq('id', 1);
+      await loadSettings();
+      setAdminMsg('✅ PDF đã cập nhật cho tất cả người dùng');
+    } catch (err) { setAdminMsg('❌ Lỗi: ' + err.message); }
+    setUploadingPdf(false);
+  };
+
+  const handleAddVideo = async (video) => {
+    const next = [...(appSettings.videos || []), { ...video, id: 'v_' + Date.now() }];
+    await supabase.from('app_settings').update({ videos: next, updated_at: new Date().toISOString() }).eq('id', 1);
+    await loadSettings();
+    setAdminMsg('✅ Đã thêm video');
+  };
+
+  const handleDeleteVideo = async (id) => {
+    const next = (appSettings.videos || []).filter(v => v.id !== id);
+    await supabase.from('app_settings').update({ videos: next, updated_at: new Date().toISOString() }).eq('id', 1);
+    await loadSettings();
+  };
+
+  const handleUploadVideoFile = async (e, meta) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAdminMsg('⏳ Đang tải video lên...');
+    try {
+      const url = await uploadToStorage(file, 'video');
+      await handleAddVideo({ ...meta, url, thumb: '🎬', duration: '—' });
+    } catch (err) { setAdminMsg('❌ Lỗi: ' + err.message); }
+  };
+
   const handleNextQuestion = () => {
     if (quizIndex < QUIZ_QUESTIONS.length - 1) {
       setQuizIndex(prev => prev + 1);
