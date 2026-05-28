@@ -951,7 +951,8 @@ export default function App() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
                       <h3 className="text-sm font-bold text-slate-200 border-b border-slate-800 pb-2">👤 Quản Lý Định Danh</h3>
-                      <input type="text" defaultValue={currentUser?.username} onBlur={(e) => handleUpdateNickname(e.target.value)} placeholder="Sửa biệt danh hiển thị..." className="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-xl text-xs font-bold text-slate-100 focus:outline-none focus:border-teal-400" />
+                      <input type="text" defaultValue={currentUser?.real_name} onBlur={(e) => handleUpdateNickname(e.target.value)} placeholder="Sửa tên hiển thị..." className="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-xl text-xs font-bold text-slate-100 focus:outline-none focus:border-teal-400" />
+                      <p className="text-[10px] text-slate-500">Username: @{currentUser?.username} (không đổi được)</p>
                       <button onClick={handleResetData} className="w-full text-left p-2.5 rounded-xl text-xs bg-rose-500/10 border border-rose-500/20 text-rose-400 font-bold hover:bg-rose-500/20 transition-all">🔄 Reset toàn bộ điểm số & huy hiệu</button>
                     </div>
                     <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
