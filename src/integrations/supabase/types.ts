@@ -56,6 +56,7 @@ export type Database = {
       app_settings: {
         Row: {
           admin_password: string
+          default_videos: Json
           id: number
           music_title: string | null
           music_url: string | null
@@ -66,6 +67,7 @@ export type Database = {
         }
         Insert: {
           admin_password?: string
+          default_videos?: Json
           id?: number
           music_title?: string | null
           music_url?: string | null
@@ -76,6 +78,7 @@ export type Database = {
         }
         Update: {
           admin_password?: string
+          default_videos?: Json
           id?: number
           music_title?: string | null
           music_url?: string | null
