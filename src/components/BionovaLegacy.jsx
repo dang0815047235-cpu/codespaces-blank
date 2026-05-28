@@ -882,7 +882,18 @@ export default function App() {
                         <button onClick={() => setPlayingVideoUrl(null)} className="text-xs bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded hover:bg-rose-500 hover:text-slate-950 font-bold transition-all">Tắt trình phát</button>
                       </div>
                       <div className="aspect-video bg-black rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center">
-                        <video src={playingVideoUrl} controls autoPlay className="w-full h-full object-cover"></video>
+                        {isYouTubeUrl(playingVideoUrl) ? (
+                          <iframe
+                            src={toYouTubeEmbed(playingVideoUrl) + (toYouTubeEmbed(playingVideoUrl).includes('?') ? '&' : '?') + 'autoplay=1&rel=0'}
+                            title={playingVideoTitle}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="w-full h-full"
+                            frameBorder="0"
+                          />
+                        ) : (
+                          <video src={playingVideoUrl} controls autoPlay className="w-full h-full object-contain bg-black"></video>
+                        )}
                       </div>
                     </div>
                   )}
