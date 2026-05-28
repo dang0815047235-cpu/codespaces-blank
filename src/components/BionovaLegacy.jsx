@@ -277,14 +277,35 @@ export default function App() {
 
     const sessionUser = localStorage.getItem('biotech_current_user');
     if (sessionUser) {
-      setCurrentUser(JSON.parse(sessionUser));
-      setIsLoggedIn(true);
+      try {
+        const u = JSON.parse(sessionUser);
+        setCurrentUser(u);
+        setIsLoggedIn(true);
+      } catch {}
     }
     return () => {
       supabase.removeChannel(settingsCh);
       supabase.removeChannel(lbCh);
     };
   }, []);
+
+  // Tải danh sách tài khoản khi vào tab admin
+  useEffect(() => {
+    if (activeTab === 'admin' && isAdmin) loadAccounts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, currentUser?.role]);
+
+  // Lời chào AI thay đổi theo role
+  useEffect(() => {
+    if (!currentUser) return;
+    setMessages([{
+      role: 'assistant',
+      text: isAdmin
+        ? `🛡️ Báo cáo Quản trị viên ${currentUser.real_name || currentUser.username}! BIOSEA AI sẵn sàng hỗ trợ điều hành hệ thống BIONOVA LEGACY. Sếp có thể hỏi về thống kê học viên, gợi ý nội dung, hoặc bất kỳ chủ đề sinh học nào. 🧬`
+        : `🧬 Xin chào ${currentUser.real_name || currentUser.username}! Mình là BIOSEA AI — trợ lý học tập của BIONOVA LEGACY. Hỏi mình về Chu kì tế bào, Nguyên phân, Giảm phân nhé! 🌿🧪`,
+    }]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?.id, currentUser?.role]);
 
   // 🔊 Nhạc nền: phát file do admin upload (mọi user nghe cùng nguồn)
   const toggleBackgroundMusic = async () => {
