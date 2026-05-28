@@ -247,13 +247,22 @@ export default function App() {
 
   const loadLeaderboard = async () => {
     const { data } = await supabase
-      .from('leaderboard_entries')
-      .select('username, score, title, badges')
+      .from('accounts')
+      .select('username, real_name, score, title, badges, role')
       .order('score', { ascending: false })
+      .order('updated_at', { ascending: true })
       .limit(100);
     if (data) {
       setLeaderboard(data.map(d => ({ ...d, badges: Array.isArray(d.badges) ? d.badges : [] })));
     }
+  };
+
+  const loadAccounts = async () => {
+    const { data } = await supabase
+      .from('accounts')
+      .select('id, real_name, username, role, score, title, created_at')
+      .order('created_at', { ascending: false });
+    if (data) setAccountsList(data);
   };
 
   // Tải dữ liệu ban đầu
