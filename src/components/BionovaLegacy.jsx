@@ -449,14 +449,17 @@ export default function App() {
   };
 
   // =================== ADMIN FUNCTIONS ===================
-  const handleAdminLogin = (e) => {
-    e.preventDefault();
-    if (adminPwdInput === appSettings.admin_password) {
-      setIsAdmin(true);
-      setAdminMsg('✅ Đăng nhập admin thành công');
-    } else {
-      setAdminMsg('❌ Sai mật khẩu admin');
-    }
+  const isAdmin = currentUser?.role === 'admin';
+
+  const handleDeleteAccount = async (accId, accUsername) => {
+    if (!isAdmin) return;
+    if (accId === currentUser?.id) { alert('Không thể xoá chính mình'); return; }
+    if (!window.confirm(`Xoá học viên "${accUsername}"? Hành động này không thể hoàn tác.`)) return;
+    const { error } = await supabase.from('accounts').delete().eq('id', accId);
+    if (error) { alert('Lỗi: ' + error.message); return; }
+    loadAccounts();
+    loadLeaderboard();
+    setAdminMsg(`🗑️ Đã xoá học viên ${accUsername}`);
   };
 
   const uploadToStorage = async (file, prefix) => {
