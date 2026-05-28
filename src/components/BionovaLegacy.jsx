@@ -429,11 +429,9 @@ export default function App() {
     setCurrentUser(updatedUser);
     localStorage.setItem('biotech_current_user', JSON.stringify(updatedUser));
 
-    await supabase.from('leaderboard_entries')
-      .upsert(
-        { username: updatedUser.username, score: maxScore, title: newTitle, badges: updatedBadges },
-        { onConflict: 'username' }
-      );
+    await supabase.from('accounts')
+      .update({ score: maxScore, title: newTitle, badges: updatedBadges, updated_at: new Date().toISOString() })
+      .eq('id', currentUser.id);
     loadLeaderboard();
   };
 
