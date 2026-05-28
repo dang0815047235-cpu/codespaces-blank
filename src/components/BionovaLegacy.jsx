@@ -507,6 +507,10 @@ export default function App() {
 
   const progressPercent = useMemo(() => Math.round(((quizIndex + 1) / QUIZ_QUESTIONS.length) * 100), [quizIndex]);
   const sortedLeaderboard = useMemo(() => [...leaderboard].sort((a, b) => b.score - a.score), [leaderboard]);
+  const allVideos = useMemo(() => {
+    const admin = (appSettings.videos || []).map(v => ({ topic: 'Admin', thumb: '🎬', duration: '—', ...v }));
+    return [...admin, ...VIDEOS_LIST];
+  }, [appSettings.videos]);
   
   const wrapperThemeClass = useMemo(() => {
     if (themeStyle === 'ocean') return 'bg-slate-950 text-sky-100';
