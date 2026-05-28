@@ -290,35 +290,41 @@ export default function App() {
     if (audioElRef.current) audioElRef.current.volume = bgVolume / 100;
   }, [bgVolume]);
 
-  // Logic xử lý Đăng ký / Đăng nhập ép buộc ngay từ đầu
-  const handleAuth = (e) => {
+  // Đăng ký / Đăng nhập (đồng bộ Supabase)
+  const handleAuth = async (e) => {
     e.preventDefault();
     if (!usernameInput.trim()) return;
     const name = usernameInput.trim();
-    let userList = JSON.parse(localStorage.getItem('biotech_leaderboard')) || [];
-    let userExist = userList.find(u => u.username.toLowerCase() === name.toLowerCase());
+    const { data: existing } = await supabase
+      .from('leaderboard_entries')
+      .select('username, score, title, badges')
+      .ilike('username', name)
+      .maybeSingle();
 
-    let loggedInUser = userExist || { username: name, score: 0, title: GET_TITLE_BY_SCORE(0), badges: ['🧫'] };
-    if (!userExist) {
-      userList.push(loggedInUser);
-      localStorage.setItem('biotech_leaderboard', JSON.stringify(userList));
-      setLeaderboard(userList);
+    let loggedInUser;
+    if (existing) {
+      loggedInUser = { ...existing, badges: Array.isArray(existing.badges) ? existing.badges : ['🧫'] };
+    } else {
+      loggedInUser = { username: name, score: 0, title: GET_TITLE_BY_SCORE(0), badges: ['🧫'] };
+      await supabase.from('leaderboard_entries').insert(loggedInUser);
+      loadLeaderboard();
     }
-    
     localStorage.setItem('biotech_current_user', JSON.stringify(loggedInUser));
     setCurrentUser(loggedInUser);
     setIsLoggedIn(true);
   };
 
-  const handleUpdateNickname = (newName) => {
+  const handleUpdateNickname = async (newName) => {
     if (!newName.trim() || !currentUser) return;
     const name = newName.trim();
-    let userList = leaderboard.map(u => u.username.toLowerCase() === currentUser.username.toLowerCase() ? { ...u, username: name } : u);
+    if (name.toLowerCase() === currentUser.username.toLowerCase()) return;
+    await supabase.from('leaderboard_entries')
+      .update({ username: name })
+      .ilike('username', currentUser.username);
     const updatedUser = { ...currentUser, username: name };
     setCurrentUser(updatedUser);
-    setLeaderboard(userList);
     localStorage.setItem('biotech_current_user', JSON.stringify(updatedUser));
-    localStorage.setItem('biotech_leaderboard', JSON.stringify(userList));
+    loadLeaderboard();
   };
 
   const handleLogout = () => {
@@ -326,26 +332,24 @@ export default function App() {
     setCurrentUser(null);
     setIsLoggedIn(false);
     setUsernameInput('');
-    if (musicIntervalRef.current) {
-      clearInterval(musicIntervalRef.current);
-      musicIntervalRef.current = null;
-    }
+    if (audioElRef.current) audioElRef.current.pause();
     setIsPlayingAudio(false);
   };
 
-  const handleResetData = () => {
+  const handleResetData = async () => {
     if (!window.confirm("Bạn có chắc chắn muốn đặt lại toàn bộ tiến trình học tập của mình không?")) return;
     if (!currentUser) return;
     const resetUser = { ...currentUser, score: 0, title: GET_TITLE_BY_SCORE(0), badges: ['🧫'] };
     setCurrentUser(resetUser);
     localStorage.setItem('biotech_current_user', JSON.stringify(resetUser));
-    let userList = leaderboard.map(u => u.username.toLowerCase() === currentUser.username.toLowerCase() ? resetUser : u);
-    setLeaderboard(userList);
-    localStorage.setItem('biotech_leaderboard', JSON.stringify(userList));
+    await supabase.from('leaderboard_entries')
+      .update({ score: 0, title: resetUser.title, badges: resetUser.badges })
+      .ilike('username', currentUser.username);
+    loadLeaderboard();
     restartQuiz();
   };
 
-  const updateGlobalStats = (finalScore) => {
+  const updateGlobalStats = async (finalScore) => {
     if (!currentUser) return;
     let updatedBadges = ['🧫']; // Đảm bảo luôn giữ badge đầu tiên
     
@@ -371,27 +375,12 @@ export default function App() {
     setCurrentUser(updatedUser);
     localStorage.setItem('biotech_current_user', JSON.stringify(updatedUser));
 
-    let currentLeaderboard = JSON.parse(localStorage.getItem('biotech_leaderboard')) || [];
-    // Loại bỏ hoàn toàn tài khoản ảo, chỉ cập nhật tài khoản thật
-    const existIdx = currentLeaderboard.findIndex(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
-    if (existIdx !== -1) {
-      currentLeaderboard[existIdx] = updatedUser;
-    } else {
-      currentLeaderboard.push(updatedUser);
-    }
-    
-    currentLeaderboard.sort((a, b) => b.score - a.score);
-    
-    // Cấp huy hiệu Top 1 nếu đứng đầu
-    currentLeaderboard = currentLeaderboard.map((u, idx) => {
-      if (idx === 0 && !u.badges.includes('🎓')) {
-        u.badges.push('🎓');
-      }
-      return u;
-    });
-
-    localStorage.setItem('biotech_leaderboard', JSON.stringify(currentLeaderboard));
-    setLeaderboard(currentLeaderboard);
+    await supabase.from('leaderboard_entries')
+      .upsert(
+        { username: updatedUser.username, score: maxScore, title: newTitle, badges: updatedBadges },
+        { onConflict: 'username' }
+      );
+    loadLeaderboard();
   };
 
   const handleOptionSelect = (option) => {
