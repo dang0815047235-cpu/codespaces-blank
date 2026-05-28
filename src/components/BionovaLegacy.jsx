@@ -1019,12 +1019,9 @@ export default function App() {
                     <p className="text-xs text-slate-400 mt-1">Cấu hình nhạc nền, video, PDF dùng chung cho TẤT CẢ người dùng.</p>
                   </div>
                   {!isAdmin ? (
-                    <form onSubmit={handleAdminLogin} className="space-y-3 max-w-sm">
-                      <label className="text-[10px] font-bold uppercase text-slate-400">Mật khẩu admin (mặc định: bionova2026)</label>
-                      <input type="password" value={adminPwdInput} onChange={(e) => setAdminPwdInput(e.target.value)} className="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-xl text-sm text-slate-100" />
-                      <button type="submit" className="w-full bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs">Đăng nhập Admin</button>
-                      {adminMsg && <p className="text-xs text-slate-400">{adminMsg}</p>}
-                    </form>
+                    <div className="p-4 bg-slate-950 border border-rose-500/30 rounded-xl text-xs text-rose-400">
+                      🚫 Bạn không có quyền Admin. Chỉ tài khoản đăng ký đầu tiên với username "admin" mới có quyền truy cập khu vực này.
+                    </div>
                   ) : (
                     <div className="space-y-5">
                       {adminMsg && <div className="text-xs p-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-300">{adminMsg}</div>}
@@ -1049,6 +1046,25 @@ export default function App() {
                             <div key={v.id} className="flex items-center justify-between text-xs bg-slate-900 border border-slate-800 rounded-lg p-2">
                               <span className="truncate pr-2">🎬 {v.title}</span>
                               <button onClick={() => handleDeleteVideo(v.id)} className="text-rose-400 text-[10px] font-bold">Xóa</button>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+
+                      <section className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
+                        <h3 className="text-sm font-bold text-amber-400">👥 Quản lý học viên ({accountsList.length})</h3>
+                        <div className="space-y-1 max-h-80 overflow-y-auto">
+                          {accountsList.map(acc => (
+                            <div key={acc.id} className="flex items-center justify-between text-xs bg-slate-900 border border-slate-800 rounded-lg p-2">
+                              <div className="truncate pr-2">
+                                <span className="font-bold text-slate-200">{acc.real_name}</span>
+                                <span className="text-slate-500"> @{acc.username}</span>
+                                {acc.role === 'admin' && <span className="text-[9px] bg-amber-500 text-slate-950 px-1 rounded ml-1 font-bold">ADMIN</span>}
+                                <div className="text-[10px] text-slate-500">Điểm: {acc.score} · {acc.title}</div>
+                              </div>
+                              {acc.id !== currentUser?.id && (
+                                <button onClick={() => handleDeleteAccount(acc.id, acc.username)} className="text-rose-400 text-[10px] font-bold bg-rose-500/10 px-2 py-1 rounded hover:bg-rose-500 hover:text-slate-950">Xóa</button>
+                              )}
                             </div>
                           ))}
                         </div>
