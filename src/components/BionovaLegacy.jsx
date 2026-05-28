@@ -1,6 +1,24 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+function VideoAdminForm({ onUploadFile, onAddUrl }) {
+  const [title, setTitle] = React.useState('');
+  const [url, setUrl] = React.useState('');
+  return (
+    <div className="space-y-2">
+      <input value={title} onChange={(e)=>setTitle(e.target.value)} placeholder="Tiêu đề video" className="w-full bg-slate-900 border border-slate-800 px-2 py-1.5 rounded text-xs text-slate-100" />
+      <div className="flex gap-2">
+        <input value={url} onChange={(e)=>setUrl(e.target.value)} placeholder="Dán URL video (mp4/youtube embed)" className="flex-1 bg-slate-900 border border-slate-800 px-2 py-1.5 rounded text-xs text-slate-100" />
+        <button onClick={()=>{ if(title && url){ onAddUrl({title, url, thumb:'🎬', duration:'—', topic:'Admin'}); setTitle(''); setUrl(''); }}} className="px-3 py-1.5 bg-teal-500 text-slate-950 rounded text-xs font-bold">+ URL</button>
+      </div>
+      <label className="block">
+        <span className="text-[10px] text-slate-400">Hoặc upload file video:</span>
+        <input type="file" accept="video/*" onChange={(e)=>onUploadFile(e,{title: title || (e.target.files?.[0]?.name||'Video mới'), topic:'Admin'})} className="text-xs text-slate-300 block mt-1" />
+      </label>
+    </div>
+  );
+}
+
 // ==========================================================
 // ĐẠI THƯ VIỆN 90 CÂU HỎI TRẮC NGHIỆM CHUYÊN SÂU BIONOVA LEGACY
 // ==========================================================
