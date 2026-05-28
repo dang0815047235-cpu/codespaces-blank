@@ -162,8 +162,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('concepts');
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [bgVolume, setBgVolume] = useState(25); 
-  const audioCtxRef = useRef(null);
-  const musicIntervalRef = useRef(null);
+  const audioElRef = useRef(null);
 
   const [themeStyle, setThemeStyle] = useState('slate'); 
   const [enableAnimation, setEnableAnimation] = useState(true);
@@ -193,23 +192,69 @@ export default function App() {
   ]);
   const [isAiLoading, setIsAiLoading] = useState(false);
 
-  // Tải dữ liệu ban đầu từ localStorage - Xóa hoàn toàn bảng xếp hạng ảo cũ
+  // Cấu hình do admin đặt (đồng bộ tất cả thiết bị)
+  const [appSettings, setAppSettings] = useState({
+    music_url: '',
+    music_title: 'Nhạc nền hệ thống',
+    pdf_url: '',
+    pdf_name: 'Tai_lieu.pdf',
+    videos: [],
+    admin_password: 'bionova2026',
+  });
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminPwdInput, setAdminPwdInput] = useState('');
+  const [adminMsg, setAdminMsg] = useState('');
+  const [uploadingMusic, setUploadingMusic] = useState(false);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
+
+  // Hàm load settings từ Supabase
+  const loadSettings = async () => {
+    const { data } = await supabase.from('app_settings').select('*').eq('id', 1).maybeSingle();
+    if (data) {
+      setAppSettings({
+        music_url: data.music_url || '',
+        music_title: data.music_title || 'Nhạc nền hệ thống',
+        pdf_url: data.pdf_url || '',
+        pdf_name: data.pdf_name || 'Tai_lieu.pdf',
+        videos: Array.isArray(data.videos) ? data.videos : [],
+        admin_password: data.admin_password || 'bionova2026',
+      });
+    }
+  };
+
+  const loadLeaderboard = async () => {
+    const { data } = await supabase
+      .from('leaderboard_entries')
+      .select('username, score, title, badges')
+      .order('score', { ascending: false })
+      .limit(100);
+    if (data) {
+      setLeaderboard(data.map(d => ({ ...d, badges: Array.isArray(d.badges) ? d.badges : [] })));
+    }
+  };
+
+  // Tải dữ liệu ban đầu
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    const storedLeaderboard = localStorage.getItem('biotech_leaderboard');
-    if (storedLeaderboard) {
-      setLeaderboard(JSON.parse(storedLeaderboard));
-    } else {
-      localStorage.setItem('biotech_leaderboard', JSON.stringify([]));
-      setLeaderboard([]);
-    }
+    loadSettings();
+    loadLeaderboard();
+
+    // Realtime: tự cập nhật khi admin đổi nhạc/video/PDF
+    const settingsCh = supabase.channel('app_settings_rt')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, () => loadSettings())
+      .subscribe();
+    const lbCh = supabase.channel('lb_rt')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'leaderboard_entries' }, () => loadLeaderboard())
+      .subscribe();
+
     const sessionUser = localStorage.getItem('biotech_current_user');
     if (sessionUser) {
       setCurrentUser(JSON.parse(sessionUser));
       setIsLoggedIn(true);
     }
     return () => {
-      if (musicIntervalRef.current) clearInterval(musicIntervalRef.current);
+      supabase.removeChannel(settingsCh);
+      supabase.removeChannel(lbCh);
     };
   }, []);
 
