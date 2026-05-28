@@ -902,6 +902,53 @@ export default function App() {
                   </form>
                 </div>
               )}
+
+              {/* TAB 7: ADMIN */}
+              {activeTab === 'admin' && (
+                <div className="bg-slate-900 border border-amber-500/30 rounded-2xl p-6 space-y-5">
+                  <div className="border-b border-slate-800 pb-3">
+                    <h2 className="text-lg font-black text-amber-400">🔐 Bảng Điều Khiển Admin</h2>
+                    <p className="text-xs text-slate-400 mt-1">Cấu hình nhạc nền, video, PDF dùng chung cho TẤT CẢ người dùng.</p>
+                  </div>
+                  {!isAdmin ? (
+                    <form onSubmit={handleAdminLogin} className="space-y-3 max-w-sm">
+                      <label className="text-[10px] font-bold uppercase text-slate-400">Mật khẩu admin (mặc định: bionova2026)</label>
+                      <input type="password" value={adminPwdInput} onChange={(e) => setAdminPwdInput(e.target.value)} className="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-xl text-sm text-slate-100" />
+                      <button type="submit" className="w-full bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs">Đăng nhập Admin</button>
+                      {adminMsg && <p className="text-xs text-slate-400">{adminMsg}</p>}
+                    </form>
+                  ) : (
+                    <div className="space-y-5">
+                      {adminMsg && <div className="text-xs p-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-300">{adminMsg}</div>}
+
+                      <section className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2">
+                        <h3 className="text-sm font-bold text-teal-400">🎵 Nhạc nền chung</h3>
+                        <p className="text-[11px] text-slate-400">Hiện tại: {appSettings.music_url ? appSettings.music_title : 'Chưa thiết lập'}</p>
+                        <input type="file" accept="audio/*" onChange={handleUploadMusic} disabled={uploadingMusic} className="text-xs text-slate-300" />
+                      </section>
+
+                      <section className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2">
+                        <h3 className="text-sm font-bold text-indigo-400">📄 Tài liệu PDF chung</h3>
+                        <p className="text-[11px] text-slate-400">Hiện tại: {appSettings.pdf_url ? appSettings.pdf_name : 'Chưa thiết lập'}</p>
+                        <input type="file" accept="application/pdf" onChange={handleUploadPdf} disabled={uploadingPdf} className="text-xs text-slate-300" />
+                      </section>
+
+                      <section className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
+                        <h3 className="text-sm font-bold text-rose-400">🎬 Video do Admin thêm ({(appSettings.videos||[]).length})</h3>
+                        <VideoAdminForm onUploadFile={handleUploadVideoFile} onAddUrl={handleAddVideo} />
+                        <div className="space-y-1">
+                          {(appSettings.videos || []).map(v => (
+                            <div key={v.id} className="flex items-center justify-between text-xs bg-slate-900 border border-slate-800 rounded-lg p-2">
+                              <span className="truncate pr-2">🎬 {v.title}</span>
+                              <button onClick={() => handleDeleteVideo(v.id)} className="text-rose-400 text-[10px] font-bold">Xóa</button>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    </div>
+                  )}
+                </div>
+              )}
             </>
         </div>
 
@@ -917,10 +964,14 @@ export default function App() {
               <p className="text-xs font-bold text-slate-300">Xem video 3D mượt mà ngay trên tab Thư Viện</p>
             </div>
             <div className="space-y-2 text-xs">
-              <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between">
-                <span className="text-slate-300 truncate pr-2">Bang_So_Sanh_Nguyen_Phan_Giam_Phan.pdf</span>
-                <span className="text-teal-400 font-medium hover:underline cursor-pointer shrink-0">Tải về</span>
-              </div>
+              {appSettings.pdf_url ? (
+                <a href={appSettings.pdf_url} target="_blank" rel="noopener noreferrer" download className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between hover:border-teal-500/50 transition-colors">
+                  <span className="text-slate-300 truncate pr-2">📄 {appSettings.pdf_name}</span>
+                  <span className="text-teal-400 font-bold shrink-0">Tải về</span>
+                </a>
+              ) : (
+                <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 text-slate-500 text-center italic">Admin chưa tải PDF</div>
+              )}
             </div>
           </div>
         </div>
