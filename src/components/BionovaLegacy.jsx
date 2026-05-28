@@ -571,6 +571,8 @@ export default function App() {
   // GIAO DIỆN CHÍNH SAU KHI ĐÃ ĐĂNG KÝ THÀNH CÔNG
   return (
     <div className={`min-h-screen font-sans flex flex-col transition-colors duration-300 ${wrapperThemeClass}`}>
+      {/* Audio nền dùng chung cho mọi user */}
+      <audio ref={audioElRef} src={appSettings.music_url || undefined} loop preload="none" />
       
       {/* HEADER */}
       <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
