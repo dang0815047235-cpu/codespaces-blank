@@ -633,26 +633,18 @@ export default function App() {
         ? `Bạn là BIOSEA AI — trợ lý cao cấp của hệ thống BIONOVA LEGACY, đang giao tiếp với QUẢN TRỊ VIÊN (admin) "${currentUser?.real_name || currentUser?.username}". Hãy trả lời với giọng điệu trang trọng, chuyên nghiệp như một cố vấn kỹ thuật: cung cấp thống kê, gợi ý quản trị hệ thống, tư vấn cấu hình, đề xuất nội dung học liệu. Xưng "Báo cáo Quản trị viên" và gọi họ là "Sếp" hoặc "Admin". Khi được hỏi về sinh học, vẫn trả lời chính xác nhưng kèm góc nhìn quản trị nội dung.`
         : `Bạn là BIOSEA AI — trợ lý học tập thân thiện của hệ thống BIONOVA LEGACY, đang giúp học viên "${currentUser?.real_name || currentUser?.username}" (danh hiệu: ${currentUser?.title}). Trả lời các câu hỏi về Chu kì tế bào, Nguyên phân, Giảm phân bằng tiếng Việt, ngắn gọn, dùng emoji 🧬🧫🔬 và giảng dạy như một gia sư sinh học cấp 3.`;
 
-      const contents = newHistory.slice(-12).map(m => ({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.text }],
+      const chatMessages = newHistory.slice(-12).map(m => ({
+        role: m.role === 'assistant' ? 'assistant' : 'user',
+        content: m.text,
       }));
-
-      const apiKey = 'AIzaSyCeQFD3ljKmx9C5oTWq0nEyClnLi6WNzmw';
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`;
-      const res = await fetch(url, {
+      const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: systemPrompt }] },
-          contents,
-          generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
-        }),
+        body: JSON.stringify({ system: systemPrompt, messages: chatMessages }),
       });
       const data = await res.json();
-      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text
-        || data?.error?.message
-        || '⚠️ Không nhận được phản hồi từ AI.';
+      const reply = data?.reply
+        || (data?.error ? '⚠️ Lỗi AI: ' + data.error : '⚠️ Không nhận được phản hồi từ AI.');
       setMessages(prev => [...prev, { role: 'assistant', text: reply }]);
       setIsAiLoading(false);
     } catch (error) {
