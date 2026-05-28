@@ -542,18 +542,40 @@ export default function App() {
     if (!aiInput.trim() || isAiLoading) return;
     
     const userText = aiInput.trim();
-    setMessages(prev => [...prev, { role: 'user', text: userText }]);
+    const newHistory = [...messages, { role: 'user', text: userText }];
+    setMessages(newHistory);
     setAiInput('');
     setIsAiLoading(true);
 
     try {
-      // Đã bảo mật API Key cũ và xử lý gọi proxy/mock an toàn cho Client-side
-      setTimeout(() => {
-        let responseMock = `🧬 Trợ lý BIOSEA AI nhận định câu hỏi của bạn rất hay! Về cơ chế phân bào, bạn cần chú ý các mốc:\n- Kì giữa: NST đóng xoắn cực đại xếp 1 hàng (Nguyên phân) hoặc 2 hàng (Giảm phân I).\n- Cấu trúc Checkpoint G1 ngăn lỗi sao chép hiệu quả. 🧪`;
-        setMessages(prev => [...prev, { role: 'assistant', text: responseMock }]);
-        setIsAiLoading(false);
-      }, 1000);
+      const systemPrompt = isAdmin
+        ? `Bạn là BIOSEA AI — trợ lý cao cấp của hệ thống BIONOVA LEGACY, đang giao tiếp với QUẢN TRỊ VIÊN (admin) "${currentUser?.real_name || currentUser?.username}". Hãy trả lời với giọng điệu trang trọng, chuyên nghiệp như một cố vấn kỹ thuật: cung cấp thống kê, gợi ý quản trị hệ thống, tư vấn cấu hình, đề xuất nội dung học liệu. Xưng "Báo cáo Quản trị viên" và gọi họ là "Sếp" hoặc "Admin". Khi được hỏi về sinh học, vẫn trả lời chính xác nhưng kèm góc nhìn quản trị nội dung.`
+        : `Bạn là BIOSEA AI — trợ lý học tập thân thiện của hệ thống BIONOVA LEGACY, đang giúp học viên "${currentUser?.real_name || currentUser?.username}" (danh hiệu: ${currentUser?.title}). Trả lời các câu hỏi về Chu kì tế bào, Nguyên phân, Giảm phân bằng tiếng Việt, ngắn gọn, dùng emoji 🧬🧫🔬 và giảng dạy như một gia sư sinh học cấp 3.`;
+
+      const contents = newHistory.slice(-12).map(m => ({
+        role: m.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: m.text }],
+      }));
+
+      const apiKey = 'AIzaSyCeQFD3ljKmx9C5oTWq0nEyClnLi6WNzmw';
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: systemPrompt }] },
+          contents,
+          generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
+        }),
+      });
+      const data = await res.json();
+      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text
+        || data?.error?.message
+        || '⚠️ Không nhận được phản hồi từ AI.';
+      setMessages(prev => [...prev, { role: 'assistant', text: reply }]);
+      setIsAiLoading(false);
     } catch (error) {
+      setMessages(prev => [...prev, { role: 'assistant', text: '⚠️ Lỗi kết nối AI: ' + error.message }]);
       setIsAiLoading(false);
     }
   };
