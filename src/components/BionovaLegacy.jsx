@@ -258,92 +258,37 @@ export default function App() {
     };
   }, []);
 
-  // 🔊 THUẬT TOÁN ĐỔI NHẠC NỀN THÀNH BÀI "HOMESICK ALIEN" (RADIOHEAD STYLE)
-  const playHomesickAlienTone = (freq, duration, currentVol, type = 'sine') => {
-    if (!audioCtxRef.current || audioCtxRef.current.state === 'suspended') return;
-    try {
-      const ctx = audioCtxRef.current;
-      const osc = ctx.createOscillator();
-      const gainNode = ctx.createGain();
-      
-      osc.type = type; 
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      
-      // Tạo hiệu ứng lơ lửng không gian (Vibrato) đặc trưng của Homesick Alien
-      if (type === 'sine') {
-        const vibrato = ctx.createOscillator();
-        const vibratoGain = ctx.createGain();
-        vibrato.frequency.value = 4.5; // Tần số rung lơ lửng
-        vibratoGain.gain.value = 3;    // Độ sâu của tiếng ngân arpeggio
-        vibrato.connect(vibratoGain);
-        vibratoGain.connect(osc.frequency);
-        vibrato.start();
-      }
-
-      const now = ctx.currentTime;
-      gainNode.gain.setValueAtTime(0, now);
-      gainNode.gain.linearRampToValueAtTime((currentVol / 100) * 0.12, now + 0.6);
-      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-      
-      osc.connect(gainNode);
-      gainNode.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + duration);
-    } catch(e) {
-      console.log(e);
+  // 🔊 Nhạc nền: phát file do admin upload (mọi user nghe cùng nguồn)
+  const toggleBackgroundMusic = async () => {
+    if (!appSettings.music_url) {
+      alert('Admin chưa thiết lập nhạc nền. Vào tab ⚙️ Admin để tải lên.');
+      return;
     }
-  };
-
-  const toggleBackgroundMusic = () => {
-    if (!isPlayingAudio) {
-      if (!audioCtxRef.current) {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        audioCtxRef.current = new AudioContext();
-      }
-      if (audioCtxRef.current.state === 'suspended') {
-        audioCtxRef.current.resume();
-      }
-
-      setIsPlayingAudio(true);
-      // Vòng lặp hợp âm chính của Homesick Alien (Hợp âm rải không gian sầu muộn)
-      const homesickMelody = [
-        293.66, 349.23, 440.00, 523.25, // Dm7 rải lơ lửng
-        293.66, 392.00, 440.00, 587.33, // G7 rải không gian
-        329.63, 392.00, 493.88, 659.25, // Cmaj7 xa xăm
-        349.23, 440.00, 523.25, 698.46  // Fmaj7 cô độc
-      ];
-      let step = 0;
-
-      musicIntervalRef.current = setInterval(() => {
-        const freq = homesickMelody[step % homesickMelody.length];
-        // Tiếng guitar rải không gian (Sine ngân mềm)
-        playHomesickAlienTone(freq, 2.5, bgVolume, 'sine');
-        
-        // Tạo âm bè bass trầm lắng ở đầu mỗi ô nhịp
-        if (step % 4 === 0) {
-          playHomesickAlienTone(freq / 2, 3.5, bgVolume * 0.7, 'triangle');
-        }
-        step++;
-      }, 1500);
-
-      // Thêm huy hiệu nghe nhạc nền
-      if (currentUser) {
-        let updatedBadges = [...currentUser.badges];
-        if (!updatedBadges.includes('📡')) {
-          updatedBadges.push('📡');
+    if (!audioElRef.current) return;
+    if (isPlayingAudio) {
+      audioElRef.current.pause();
+      setIsPlayingAudio(false);
+    } else {
+      try {
+        audioElRef.current.volume = bgVolume / 100;
+        await audioElRef.current.play();
+        setIsPlayingAudio(true);
+        if (currentUser && !currentUser.badges.includes('📡')) {
+          const updatedBadges = [...currentUser.badges, '📡'];
           const updatedUser = { ...currentUser, badges: updatedBadges };
           setCurrentUser(updatedUser);
           localStorage.setItem('biotech_current_user', JSON.stringify(updatedUser));
         }
+      } catch (e) {
+        alert('Không phát được nhạc: ' + e.message);
       }
-    } else {
-      if (musicIntervalRef.current) {
-        clearInterval(musicIntervalRef.current);
-        musicIntervalRef.current = null;
-      }
-      setIsPlayingAudio(false);
     }
   };
+
+  // Cập nhật âm lượng khi slider thay đổi
+  useEffect(() => {
+    if (audioElRef.current) audioElRef.current.volume = bgVolume / 100;
+  }, [bgVolume]);
 
   // Logic xử lý Đăng ký / Đăng nhập ép buộc ngay từ đầu
   const handleAuth = (e) => {
