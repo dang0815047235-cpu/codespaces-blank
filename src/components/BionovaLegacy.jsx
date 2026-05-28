@@ -210,9 +210,7 @@ export default function App() {
   const [quizComplete, setQuizComplete] = useState(false);
 
   const [aiInput, setAiInput] = useState('');
-  const [messages, setMessages] = useState([
-    { role: 'assistant', text: '🧬 Xin chào! Mình là BIOSEA AI - trợ lý học tập thông thái của hệ thống BIONOVA LEGACY. Hãy hỏi mình bất cứ điều gì về Chu kì tế bào, Nguyên phân và Giảm phân nhé! 🌿🧪' }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
 
   // Cấu hình do admin đặt (đồng bộ tất cả thiết bị)
