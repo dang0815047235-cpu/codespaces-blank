@@ -190,6 +190,11 @@ export default function App() {
   const [usernameInput, setUsernameInput] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
+  const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
+  const [realNameInput, setRealNameInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [accountsList, setAccountsList] = useState([]);
 
   // Quản lý trạng thái xem video
   const [playingVideoUrl, setPlayingVideoUrl] = useState(null);
