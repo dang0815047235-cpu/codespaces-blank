@@ -573,6 +573,32 @@ export default function App() {
     } catch (err) { setAdminMsg('❌ Lỗi: ' + err.message); }
   };
 
+  // Lưu chỉnh sửa 1 trong 15 video mặc định
+  const handleSaveDefaultVideo = async (video) => {
+    const list = (appSettings.default_videos || []).map(v => v.id === video.id ? video : v);
+    await supabase.from('app_settings').update({ default_videos: list, updated_at: new Date().toISOString() }).eq('id', 1);
+    await loadSettings();
+    setAdminMsg('✅ Đã lưu video: ' + video.title);
+  };
+  const handleDeleteDefaultVideo = async (id) => {
+    if (!window.confirm('Xóa video mặc định này?')) return;
+    const list = (appSettings.default_videos || []).filter(v => v.id !== id);
+    await supabase.from('app_settings').update({ default_videos: list, updated_at: new Date().toISOString() }).eq('id', 1);
+    await loadSettings();
+  };
+  const handleAddDefaultVideo = async () => {
+    const list = [...(appSettings.default_videos || []), {
+      id: 'd_' + Date.now(),
+      title: 'Video mới',
+      topic: 'Tổng hợp',
+      thumb: '🎬',
+      duration: '—',
+      url: 'https://www.youtube.com/embed/'
+    }];
+    await supabase.from('app_settings').update({ default_videos: list, updated_at: new Date().toISOString() }).eq('id', 1);
+    await loadSettings();
+  };
+
   const handleNextQuestion = () => {
     if (quizIndex < QUIZ_QUESTIONS.length - 1) {
       setQuizIndex(prev => prev + 1);
