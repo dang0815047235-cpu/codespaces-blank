@@ -254,6 +254,7 @@ export default function App() {
     pdf_url: '',
     pdf_name: 'Tai_lieu.pdf',
     videos: [],
+    default_videos: [],
     admin_password: 'bionova2026',
   });
   const [adminMsg, setAdminMsg] = useState('');
@@ -270,6 +271,7 @@ export default function App() {
         pdf_url: data.pdf_url || '',
         pdf_name: data.pdf_name || 'Tai_lieu.pdf',
         videos: Array.isArray(data.videos) ? data.videos : [],
+        default_videos: Array.isArray(data.default_videos) ? data.default_videos : [],
         admin_password: data.admin_password || 'bionova2026',
       });
     }
