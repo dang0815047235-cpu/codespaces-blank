@@ -929,7 +929,9 @@ export default function App() {
                             <tr key={index} className={`hover:bg-slate-800/30 ${user.username === currentUser?.username ? 'bg-indigo-500/5' : ''}`}>
                               <td className="py-3 font-mono font-bold text-slate-400">#{index + 1}</td>
                               <td className="py-3 font-bold text-slate-200">
-                                {user.username} {user.username === currentUser?.username && <span className="text-[9px] bg-teal-500 text-slate-950 font-extrabold px-1 rounded ml-1">BẠN</span>}
+                                {user.real_name || user.username} <span className="text-[9px] text-slate-500">@{user.username}</span>
+                                {user.role === 'admin' && <span className="text-[9px] bg-amber-500 text-slate-950 font-extrabold px-1 rounded ml-1">ADMIN</span>}
+                                {user.username === currentUser?.username && <span className="text-[9px] bg-teal-500 text-slate-950 font-extrabold px-1 rounded ml-1">BẠN</span>}
                               </td>
                               <td className="py-3 text-amber-400 font-bold">{user.title}</td>
                               <td className="py-3 text-sm tracking-wide">{user.badges?.join(' ')}</td>
