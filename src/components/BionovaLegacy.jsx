@@ -324,26 +324,48 @@ export default function App() {
 
   // Đăng ký / Đăng nhập (đồng bộ Supabase)
   const handleAuth = async (e) => {
-    e.preventDefault();
-    if (!usernameInput.trim()) return;
-    const name = usernameInput.trim();
-    const { data: existing } = await supabase
-      .from('leaderboard_entries')
-      .select('username, score, title, badges')
-      .ilike('username', name)
-      .maybeSingle();
+    if (e && e.preventDefault) e.preventDefault();
+    setAuthError('');
+    const uname = usernameInput.trim().toLowerCase();
+    const pwd = passwordInput;
+    const realName = realNameInput.trim();
+    if (!uname || !pwd) { setAuthError('Vui lòng nhập đầy đủ username và mật khẩu'); return; }
 
-    let loggedInUser;
-    if (existing) {
-      loggedInUser = { ...existing, badges: Array.isArray(existing.badges) ? existing.badges : ['🧫'] };
-    } else {
-      loggedInUser = { username: name, score: 0, title: GET_TITLE_BY_SCORE(0), badges: ['🧫'] };
-      await supabase.from('leaderboard_entries').insert(loggedInUser);
+    if (authMode === 'register') {
+      if (!realName) { setAuthError('Vui lòng nhập tên thật'); return; }
+      if (pwd.length < 4) { setAuthError('Mật khẩu tối thiểu 4 ký tự'); return; }
+      const { data: existing } = await supabase
+        .from('accounts').select('username').eq('username', uname).maybeSingle();
+      if (existing) { setAuthError('Username này đã tồn tại, vui lòng chọn tên khác hoặc đăng nhập'); return; }
+
+      // Kiểm tra: tài khoản đầu tiên với username 'admin' sẽ là admin
+      let role = 'user';
+      if (uname === 'admin') {
+        const { data: anyAdmin } = await supabase.from('accounts').select('id').eq('role', 'admin').limit(1);
+        if (!anyAdmin || anyAdmin.length === 0) role = 'admin';
+      }
+
+      const newAcc = {
+        real_name: realName, username: uname, password: pwd, role,
+        score: 0, title: GET_TITLE_BY_SCORE(0), badges: ['🧫'],
+      };
+      const { data: inserted, error } = await supabase.from('accounts').insert(newAcc).select().single();
+      if (error) { setAuthError('Đăng ký lỗi: ' + error.message); return; }
+      localStorage.setItem('biotech_current_user', JSON.stringify(inserted));
+      setCurrentUser(inserted);
+      setIsLoggedIn(true);
       loadLeaderboard();
+    } else {
+      const { data: acc } = await supabase
+        .from('accounts').select('*').eq('username', uname).maybeSingle();
+      if (!acc) { setAuthError('Tài khoản không tồn tại'); return; }
+      if (acc.password !== pwd) { setAuthError('Sai mật khẩu'); return; }
+      const user = { ...acc, badges: Array.isArray(acc.badges) ? acc.badges : ['🧫'] };
+      localStorage.setItem('biotech_current_user', JSON.stringify(user));
+      setCurrentUser(user);
+      setIsLoggedIn(true);
     }
-    localStorage.setItem('biotech_current_user', JSON.stringify(loggedInUser));
-    setCurrentUser(loggedInUser);
-    setIsLoggedIn(true);
+    setPasswordInput('');
   };
 
   const handleUpdateNickname = async (newName) => {
