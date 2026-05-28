@@ -630,32 +630,43 @@ export default function App() {
           <div>
             <h2 className="text-2xl font-black text-slate-100 tracking-tight">BIONOVA LEGACY</h2>
             <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-              Chào mừng bạn đến với hệ thống khảo sát phân bào sinh học. Vui lòng khởi tạo biệt danh học viên để mở khóa toàn bộ tài nguyên trên trang web.
+              {authMode === 'register'
+                ? 'Tạo tài khoản học viên mới. Tài khoản đầu tiên với username "admin" sẽ trở thành Quản trị viên.'
+                : 'Đăng nhập bằng tài khoản học viên đã đăng ký để vào hệ thống.'}
             </p>
           </div>
-          <form onSubmit={handleAuth} action="#" method="post" className="space-y-4">
-            <div className="space-y-1 text-left">
-              <label className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider pl-1">Tên học viên / Biệt danh</label>
-              <input 
-                type="text" 
-                required
-                value={usernameInput} 
-                onChange={(e) => setUsernameInput(e.target.value)} 
-                placeholder="Ví dụ: Bẹp..." 
-                maxLength={14} 
-                className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-3 rounded-xl text-sm font-bold text-center text-slate-100 transition-all focus:outline-none placeholder-slate-600" 
-              />
+          <div className="flex gap-2 bg-slate-950 rounded-xl p-1">
+            <button onClick={() => { setAuthMode('login'); setAuthError(''); }}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold ${authMode==='login'?'bg-teal-500 text-slate-950':'text-slate-400'}`}>Đăng nhập</button>
+            <button onClick={() => { setAuthMode('register'); setAuthError(''); }}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold ${authMode==='register'?'bg-indigo-500 text-white':'text-slate-400'}`}>Đăng ký</button>
+          </div>
+          <form onSubmit={handleAuth} action="#" method="post" className="space-y-3 text-left">
+            {authMode === 'register' && (
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider pl-1">Tên thật</label>
+                <input type="text" value={realNameInput} onChange={(e)=>setRealNameInput(e.target.value)} maxLength={40} placeholder="VD: Nguyễn Văn A"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-sm text-slate-100 focus:outline-none placeholder-slate-600" />
+              </div>
+            )}
+            <div className="space-y-1">
+              <label className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider pl-1">Username</label>
+              <input type="text" value={usernameInput} onChange={(e)=>setUsernameInput(e.target.value)} maxLength={20} placeholder="username (không dấu)"
+                className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-sm text-slate-100 focus:outline-none placeholder-slate-600" />
             </div>
-            <button
-              type="button"
-              onClick={(e) => handleAuth(e)}
-              className="w-full bg-gradient-to-r from-teal-400 to-indigo-500 hover:from-teal-300 hover:to-indigo-400 text-slate-950 font-black text-xs uppercase tracking-wider py-3.5 rounded-xl shadow-lg transition-all transform active:scale-98"
-            >
-              Kích Hoạt Tài Khoản & Vào Hệ Thống
+            <div className="space-y-1">
+              <label className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider pl-1">Mật khẩu</label>
+              <input type="password" value={passwordInput} onChange={(e)=>setPasswordInput(e.target.value)} placeholder="••••••"
+                className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-sm text-slate-100 focus:outline-none placeholder-slate-600" />
+            </div>
+            {authError && <div className="text-xs text-rose-400 bg-rose-500/10 border border-rose-500/30 p-2 rounded-lg">{authError}</div>}
+            <button type="button" onClick={(e)=>handleAuth(e)}
+              className="w-full bg-gradient-to-r from-teal-400 to-indigo-500 hover:from-teal-300 hover:to-indigo-400 text-slate-950 font-black text-xs uppercase tracking-wider py-3 rounded-xl shadow-lg">
+              {authMode==='register'?'Tạo Tài Khoản & Vào Hệ Thống':'Đăng Nhập'}
             </button>
           </form>
           <div className="text-[10px] text-slate-500 font-medium pt-2">
-            Hệ thống tự động đồng bộ huy hiệu & danh hiệu vào bộ nhớ cục bộ.
+            Hệ thống đồng bộ điểm và bảng xếp hạng theo thời gian thực.
           </div>
         </div>
       </div>
