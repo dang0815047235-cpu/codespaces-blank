@@ -224,8 +224,6 @@ export default function App() {
     videos: [],
     admin_password: 'bionova2026',
   });
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [adminPwdInput, setAdminPwdInput] = useState('');
   const [adminMsg, setAdminMsg] = useState('');
   const [uploadingMusic, setUploadingMusic] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
