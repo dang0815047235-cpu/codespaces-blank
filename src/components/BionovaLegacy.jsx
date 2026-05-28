@@ -1120,6 +1120,19 @@ export default function App() {
                       </section>
 
                       <section className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-sm font-bold text-teal-400">📺 Chỉnh sửa trực tiếp 15 video mặc định ({(appSettings.default_videos||[]).length})</h3>
+                          <button onClick={handleAddDefaultVideo} className="text-[10px] bg-teal-500 text-slate-950 font-bold px-2 py-1 rounded">+ Thêm</button>
+                        </div>
+                        <p className="text-[10px] text-slate-500">Sửa tiêu đề / URL / chủ đề rồi bấm 💾 — thay đổi áp dụng cho TẤT CẢ người dùng.</p>
+                        <div className="space-y-2 max-h-[480px] overflow-y-auto">
+                          {(appSettings.default_videos || []).map(v => (
+                            <DefaultVideoRow key={v.id} video={v} onSave={handleSaveDefaultVideo} onDelete={handleDeleteDefaultVideo} />
+                          ))}
+                        </div>
+                      </section>
+
+                      <section className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
                         <h3 className="text-sm font-bold text-amber-400">👥 Quản lý học viên ({accountsList.length})</h3>
                         <div className="space-y-1 max-h-80 overflow-y-auto">
                           {accountsList.map(acc => (
