@@ -587,7 +587,7 @@ export default function App() {
         </div>
         <div className="flex items-center gap-3">
           <button onClick={toggleBackgroundMusic} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${isPlayingAudio ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30' : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-600'}`}>
-            {isPlayingAudio ? `👽 Homesick Alien: ${bgVolume}%` : '🔇 Nhạc nền: Tắt'}
+            {isPlayingAudio ? `🎵 ${appSettings.music_title}: ${bgVolume}%` : (appSettings.music_url ? '🔇 Nhạc nền: Tắt' : '⚠️ Chưa có nhạc')}
           </button>
           <div className="flex items-center gap-3 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-xl">
             <div className="text-right">
@@ -719,7 +719,8 @@ export default function App() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {VIDEOS_LIST.map(video => (
-                      <div 
+                  {allVideos.map(video => (
+                    <div 
                         key={video.id} 
                         onClick={() => {
                           setPlayingVideoUrl(video.url);
