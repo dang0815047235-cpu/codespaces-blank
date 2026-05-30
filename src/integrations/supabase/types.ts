@@ -19,7 +19,7 @@ export type Database = {
           badges: Json
           created_at: string
           id: string
-          password: string
+          password_hash: string | null
           real_name: string
           role: string
           score: number
@@ -31,7 +31,7 @@ export type Database = {
           badges?: Json
           created_at?: string
           id?: string
-          password: string
+          password_hash?: string | null
           real_name: string
           role?: string
           score?: number
@@ -43,7 +43,7 @@ export type Database = {
           badges?: Json
           created_at?: string
           id?: string
-          password?: string
+          password_hash?: string | null
           real_name?: string
           role?: string
           score?: number
@@ -121,7 +121,56 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      change_password: {
+        Args: {
+          p_new_password: string
+          p_old_password: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
+      login_account: {
+        Args: { p_password: string; p_username: string }
+        Returns: {
+          badges: Json
+          created_at: string
+          id: string
+          password_hash: string | null
+          real_name: string
+          role: string
+          score: number
+          title: string
+          updated_at: string
+          username: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "accounts"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      register_account: {
+        Args: { p_password: string; p_real_name: string; p_username: string }
+        Returns: {
+          badges: Json
+          created_at: string
+          id: string
+          password_hash: string | null
+          real_name: string
+          role: string
+          score: number
+          title: string
+          updated_at: string
+          username: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "accounts"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       [_ in never]: never
