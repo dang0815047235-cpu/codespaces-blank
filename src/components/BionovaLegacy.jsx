@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 function VideoAdminForm({ onUploadFile, onAddUrl }) {
   const [title, setTitle] = React.useState('');
@@ -189,6 +191,15 @@ const BADGES_LIST = [
   { id: 'b13', name: '👑 Kỉ Lục Biến Dị', desc: 'Đạt tối đa 90/90 điểm câu đúng', icon: '👑' },
   { id: 'b14', name: '📡 Tần Số Không Gian', desc: 'Kích hoạt nghe nhạc nền Alien', icon: '📡' },
   { id: 'b15', name: '🎓 Thượng Đỉnh Bionova', desc: 'Có tên trong Top 1 Bảng xếp hạng', icon: '🎓' }
+];
+
+// 👑 HUY HIỆU ĐẶC QUYỀN CHỈ DÀNH CHO ADMIN
+const ADMIN_BADGES_LIST = [
+  { id: 'a1', name: '👑 Tối Thượng Quản Trị', desc: 'Đặc quyền tối cao của Admin BIONOVA', icon: '👑' },
+  { id: 'a2', name: '🛡️ Vệ Thần Hệ Thống', desc: 'Bảo vệ và điều hành toàn bộ hệ sinh thái', icon: '🛡️' },
+  { id: 'a3', name: '⚜️ Kiến Trúc Sư Bionova', desc: 'Người tạo lập và kiến tạo nội dung học liệu', icon: '⚜️' },
+  { id: 'a4', name: '💎 Tinh Thể Vô Cực', desc: 'Huy hiệu huyền thoại độc nhất của Admin', icon: '💎' },
+  { id: 'a5', name: '🔱 Quyền Trượng Di Truyền', desc: 'Quyền lực tuyệt đối với mọi học viên', icon: '🔱' }
 ];
 
 // 🏅 HỆ THỐNG 15 DANH HIỆU NÂNG CẤP THEO TIẾN TRÌNH ĐIỂM
