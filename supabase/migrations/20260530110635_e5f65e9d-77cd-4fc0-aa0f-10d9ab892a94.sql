@@ -1,5 +1,7 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto SCHEMA extensions;
 
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+-- Thêm cấu hình search_path cho phiên chạy hiện tại để đảm bảo lệnh UPDATE không lỗi
+SET search_path TO public, extensions;
 
 -- Add hash column
 ALTER TABLE public.accounts ADD COLUMN IF NOT EXISTS password_hash text;
@@ -13,9 +15,11 @@ WHERE password_hash IS NULL AND password IS NOT NULL AND length(password) > 0;
 ALTER TABLE public.accounts DROP COLUMN IF EXISTS password;
 
 -- Constraints
-ALTER TABLE public.accounts
-  ADD CONSTRAINT accounts_username_format CHECK (username ~ '^[a-z0-9_]{3,24}$'),
-  ADD CONSTRAINT accounts_realname_len CHECK (char_length(real_name) BETWEEN 1 AND 60);
+ALTER TABLE public.accounts DROP CONSTRAINT IF EXISTS accounts_username_format;
+ALTER TABLE public.accounts ADD CONSTRAINT accounts_username_format CHECK (username ~ '^[a-z0-9_]{3,24}$');
+
+ALTER TABLE public.accounts DROP CONSTRAINT IF EXISTS accounts_realname_len;
+ALTER TABLE public.accounts ADD CONSTRAINT accounts_realname_len CHECK (char_length(real_name) BETWEEN 1 AND 60);
 
 -- Unique username (case-insensitive already lowercased by app)
 CREATE UNIQUE INDEX IF NOT EXISTS accounts_username_unique ON public.accounts (username);
@@ -28,7 +32,8 @@ CREATE OR REPLACE FUNCTION public.register_account(
 ) RETURNS public.accounts
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+-- ĐÃ SỬA Ở ĐÂY: Thêm extensions vào search_path
+SET search_path = public, extensions 
 AS $$
 DECLARE
   v_role text := 'user';
@@ -71,7 +76,8 @@ CREATE OR REPLACE FUNCTION public.login_account(
 ) RETURNS public.accounts
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+-- ĐÃ SỬA Ở ĐÂY: Thêm extensions vào search_path
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_uname text := lower(trim(p_username));
@@ -97,7 +103,8 @@ CREATE OR REPLACE FUNCTION public.change_password(
 ) RETURNS boolean
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+-- ĐÃ SỬA Ở ĐÂY: Thêm extensions vào search_path
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_hash text;
@@ -116,7 +123,7 @@ BEGIN
 END;
 $$;
 
--- Lock down direct password_hash access: revoke column from anon/authenticated
+-- Lock down direct password_hash access
 REVOKE ALL ON public.accounts FROM anon, authenticated;
 GRANT SELECT (id, username, real_name, role, score, title, badges, created_at, updated_at)
   ON public.accounts TO anon, authenticated;
