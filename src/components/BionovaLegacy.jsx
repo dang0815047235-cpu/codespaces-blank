@@ -778,7 +778,7 @@ export default function App() {
         <button onClick={() => setActiveTab('videos')} className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeTab === 'videos' ? 'bg-teal-500 text-slate-950 shadow' : 'text-slate-400 hover:text-slate-200'}`}>🎥 Thư Viện Video (15)</button>
         <button onClick={() => setActiveTab('quiz')} className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeTab === 'quiz' ? 'bg-teal-500 text-slate-950 shadow' : 'text-slate-400 hover:text-slate-200'}`}>✍️ Trắc Nghiệm (90 Câu)</button>
         <button onClick={() => setActiveTab('leaderboard')} className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeTab === 'leaderboard' ? 'bg-teal-500 text-slate-950 shadow' : 'text-slate-400 hover:text-slate-200'}`}>🏆 Bảng Xếp Hạng</button>
-        <button onClick={() => setActiveTab('settings')} className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeTab === 'settings' ? 'bg-indigo-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}>⚙️ Thành Tích ({currentUser?.badges?.length}/15)</button>
+        <button onClick={() => setActiveTab('settings')} className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeTab === 'settings' ? 'bg-indigo-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}>⚙️ Thành Tích ({isAdmin ? `${BADGES_LIST.length + ADMIN_BADGES_LIST.length}/${BADGES_LIST.length + ADMIN_BADGES_LIST.length}` : `${currentUser?.badges?.length || 0}/${BADGES_LIST.length}`})</button>
         <button onClick={() => setActiveTab('ai-chat')} className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeTab === 'ai-chat' ? 'bg-teal-500 text-slate-950 shadow' : 'text-slate-400 hover:text-slate-200'}`}>🤖 BIOSEA AI</button>
         <button onClick={() => setActiveTab('admin')} className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeTab === 'admin' ? 'bg-amber-500 text-slate-950' : 'text-slate-400 hover:text-slate-200'}`}>🔐 Admin</button>
       </nav>
@@ -1089,8 +1089,12 @@ export default function App() {
                   <div className="flex-1 overflow-y-auto space-y-3 pr-2 text-xs sm:text-sm">
                     {messages.map((msg, i) => (
                       <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[85%] rounded-xl p-3 leading-relaxed whitespace-pre-wrap ${msg.role === 'user' ? 'bg-teal-500 text-slate-950 font-bold' : 'bg-slate-950 border border-slate-800 text-slate-200'}`}>
-                          {msg.text}
+                        <div className={`max-w-[85%] rounded-xl p-3 leading-relaxed ${msg.role === 'user' ? 'bg-teal-500 text-slate-950 font-bold whitespace-pre-wrap' : 'bg-slate-950 border border-slate-800 text-slate-200'}`}>
+                          {msg.role === 'user' ? msg.text : (
+                            <div className="prose prose-invert prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-strong:text-teal-300 prose-code:text-amber-300 prose-code:bg-slate-900 prose-code:px-1 prose-code:rounded prose-a:text-teal-400">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
