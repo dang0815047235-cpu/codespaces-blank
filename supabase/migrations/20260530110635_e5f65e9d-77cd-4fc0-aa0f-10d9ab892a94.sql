@@ -1,30 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto SCHEMA extensions;
 
--- Thêm cấu hình search_path cho phiên chạy hiện tại để đảm bảo lệnh UPDATE không lỗi
-SET search_path TO public, extensions;
-
--- Add hash column
-ALTER TABLE public.accounts ADD COLUMN IF NOT EXISTS password_hash text;
-
--- Backfill: hash any existing plaintext passwords
-UPDATE public.accounts
-SET password_hash = crypt(password, gen_salt('bf', 10))
-WHERE password_hash IS NULL AND password IS NOT NULL AND length(password) > 0;
-
--- Drop plaintext column
-ALTER TABLE public.accounts DROP COLUMN IF EXISTS password;
-
--- Constraints
-ALTER TABLE public.accounts DROP CONSTRAINT IF EXISTS accounts_username_format;
-ALTER TABLE public.accounts ADD CONSTRAINT accounts_username_format CHECK (username ~ '^[a-z0-9_]{3,24}$');
-
-ALTER TABLE public.accounts DROP CONSTRAINT IF EXISTS accounts_realname_len;
-ALTER TABLE public.accounts ADD CONSTRAINT accounts_realname_len CHECK (char_length(real_name) BETWEEN 1 AND 60);
-
--- Unique username (case-insensitive already lowercased by app)
-CREATE UNIQUE INDEX IF NOT EXISTS accounts_username_unique ON public.accounts (username);
-
--- Secure register function (returns row without password_hash)
+-- Cập nhật hàm Đăng ký (Register)
 CREATE OR REPLACE FUNCTION public.register_account(
   p_username text,
   p_real_name text,
@@ -32,7 +8,6 @@ CREATE OR REPLACE FUNCTION public.register_account(
 ) RETURNS public.accounts
 LANGUAGE plpgsql
 SECURITY DEFINER
--- ĐÃ SỬA Ở ĐÂY: Thêm extensions vào search_path
 SET search_path = public, extensions 
 AS $$
 DECLARE
@@ -69,14 +44,13 @@ BEGIN
 END;
 $$;
 
--- Secure login function
+-- Cập nhật hàm Đăng nhập (Login)
 CREATE OR REPLACE FUNCTION public.login_account(
   p_username text,
   p_password text
 ) RETURNS public.accounts
 LANGUAGE plpgsql
 SECURITY DEFINER
--- ĐÃ SỬA Ở ĐÂY: Thêm extensions vào search_path
 SET search_path = public, extensions
 AS $$
 DECLARE
@@ -95,7 +69,7 @@ BEGIN
 END;
 $$;
 
--- Change password function (verifies old password)
+-- Cập nhật hàm Đổi mật khẩu (Change Password)
 CREATE OR REPLACE FUNCTION public.change_password(
   p_user_id uuid,
   p_old_password text,
@@ -103,7 +77,6 @@ CREATE OR REPLACE FUNCTION public.change_password(
 ) RETURNS boolean
 LANGUAGE plpgsql
 SECURITY DEFINER
--- ĐÃ SỬA Ở ĐÂY: Thêm extensions vào search_path
 SET search_path = public, extensions
 AS $$
 DECLARE
@@ -123,17 +96,10 @@ BEGIN
 END;
 $$;
 
--- Lock down direct password_hash access
-REVOKE ALL ON public.accounts FROM anon, authenticated;
-GRANT SELECT (id, username, real_name, role, score, title, badges, created_at, updated_at)
-  ON public.accounts TO anon, authenticated;
-GRANT INSERT (username, real_name, role, score, title, badges)
-  ON public.accounts TO authenticated;
-GRANT UPDATE (real_name, score, title, badges, updated_at)
-  ON public.accounts TO anon, authenticated;
-GRANT DELETE ON public.accounts TO anon, authenticated;
-GRANT ALL ON public.accounts TO service_role;
-
+-- Phân lại quyền thực thi hàm cho các tài khoản API
 GRANT EXECUTE ON FUNCTION public.register_account(text,text,text) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.login_account(text,text) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.change_password(uuid,text,text) TO anon, authenticated;
+
+-- Ép làm mới hệ thống
+NOTIFY pgrst, 'reload schema';
