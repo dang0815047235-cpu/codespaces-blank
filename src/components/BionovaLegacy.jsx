@@ -1060,18 +1060,21 @@ export default function App() {
 
                   {/* DANH SÁCH 15 HUY HIỆU */}
                   <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-                    <h3 className="text-base font-bold text-slate-100 border-b border-slate-800 pb-3 mb-4">🏅 Đại Kho Tàng 15 Huy Hiệu Thành Tích Độc Quyền</h3>
+                    <h3 className="text-base font-bold text-slate-100 border-b border-slate-800 pb-3 mb-4">
+                      🏅 Đại Kho Tàng Huy Hiệu Thành Tích {isAdmin && <span className="text-amber-400">+ Đặc Quyền Admin</span>}
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                      {BADGES_LIST.map((badge) => {
-                        const hasBadge = currentUser?.badges?.includes(badge.icon);
+                      {[...BADGES_LIST, ...(isAdmin ? ADMIN_BADGES_LIST : [])].map((badge) => {
+                        const isAdminBadge = ADMIN_BADGES_LIST.some(b => b.icon === badge.icon);
+                        const hasBadge = isAdmin ? true : currentUser?.badges?.includes(badge.icon);
                         return (
-                          <div key={badge.id} className={`p-3 rounded-xl border flex items-center gap-3 bg-slate-950 transition-all ${hasBadge ? 'border-teal-500/40 bg-teal-500/[0.02]' : 'border-slate-900 opacity-30'}`}>
+                          <div key={badge.id} className={`p-3 rounded-xl border flex items-center gap-3 bg-slate-950 transition-all ${isAdminBadge ? 'border-amber-500/50 bg-amber-500/[0.04]' : hasBadge ? 'border-teal-500/40 bg-teal-500/[0.02]' : 'border-slate-900 opacity-30'}`}>
                             <div className="text-2xl">{badge.icon}</div>
                             <div>
                               <p className="font-bold text-slate-200">{badge.name}</p>
                               <p className="text-[11px] text-slate-400 mt-0.5">{badge.desc}</p>
                             </div>
-                            {hasBadge ? <span className="ml-auto text-[9px] bg-emerald-500/20 text-emerald-400 font-extrabold px-1.5 py-0.5 rounded uppercase">Đã mở</span> : <span className="ml-auto text-[9px] bg-slate-800 text-slate-500 font-medium px-1.5 py-0.5 rounded">Khóa</span>}
+                            {isAdminBadge ? <span className="ml-auto text-[9px] bg-amber-500/20 text-amber-400 font-extrabold px-1.5 py-0.5 rounded uppercase">Admin</span> : hasBadge ? <span className="ml-auto text-[9px] bg-emerald-500/20 text-emerald-400 font-extrabold px-1.5 py-0.5 rounded uppercase">Đã mở</span> : <span className="ml-auto text-[9px] bg-slate-800 text-slate-500 font-medium px-1.5 py-0.5 rounded">Khóa</span>}
                           </div>
                         );
                       })}
