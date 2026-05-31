@@ -240,6 +240,11 @@ export default function App() {
   const [passwordInput, setPasswordInput] = useState('');
   const [authError, setAuthError] = useState('');
   const [accountsList, setAccountsList] = useState([]);
+  const [pwdOld, setPwdOld] = useState('');
+  const [pwdNew, setPwdNew] = useState('');
+  const [pwdNew2, setPwdNew2] = useState('');
+  const [pwdMsg, setPwdMsg] = useState(null); // { type:'ok'|'err', text:string }
+  const [pwdLoading, setPwdLoading] = useState(false);
 
   // Quản lý trạng thái xem video
   const [playingVideoUrl, setPlayingVideoUrl] = useState(null);
