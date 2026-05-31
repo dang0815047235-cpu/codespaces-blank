@@ -474,6 +474,36 @@ export default function App() {
     setIsPlayingAudio(false);
   };
 
+  // Đổi mật khẩu (gọi RPC change_password — verify mật khẩu cũ trước khi cập nhật)
+  const handleChangePassword = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setPwdMsg(null);
+    if (!currentUser?.id) { setPwdMsg({ type:'err', text:'Bạn cần đăng nhập.' }); return; }
+    if (!pwdOld || !pwdNew || !pwdNew2) { setPwdMsg({ type:'err', text:'Vui lòng nhập đầy đủ 3 ô.' }); return; }
+    if (pwdNew.length < 6 || pwdNew.length > 72) { setPwdMsg({ type:'err', text:'Mật khẩu mới phải 6-72 ký tự.' }); return; }
+    if (pwdNew !== pwdNew2) { setPwdMsg({ type:'err', text:'Mật khẩu mới nhập lại không khớp.' }); return; }
+    if (pwdNew === pwdOld) { setPwdMsg({ type:'err', text:'Mật khẩu mới phải khác mật khẩu cũ.' }); return; }
+    setPwdLoading(true);
+    try {
+      const { data, error } = await supabase.rpc('change_password', {
+        p_user_id: currentUser.id,
+        p_old_password: pwdOld,
+        p_new_password: pwdNew,
+      });
+      if (error) { setPwdMsg({ type:'err', text: error.message || 'Đổi mật khẩu thất bại.' }); return; }
+      if (data === true) {
+        setPwdMsg({ type:'ok', text:'✅ Đổi mật khẩu thành công! Lần đăng nhập sau dùng mật khẩu mới nhé.' });
+        setPwdOld(''); setPwdNew(''); setPwdNew2('');
+      } else {
+        setPwdMsg({ type:'err', text:'Đổi mật khẩu thất bại.' });
+      }
+    } catch (err) {
+      setPwdMsg({ type:'err', text: err?.message || 'Có lỗi xảy ra, thử lại sau.' });
+    } finally {
+      setPwdLoading(false);
+    }
+  };
+
   const handleResetData = async () => {
     if (!window.confirm("Bạn có chắc chắn muốn đặt lại toàn bộ tiến trình học tập của mình không?")) return;
     if (!currentUser) return;
