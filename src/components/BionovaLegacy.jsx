@@ -262,6 +262,7 @@ export default function App() {
   const [aiInput, setAiInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [previewFile, setPreviewFile] = useState(null);
   const chatScrollRef = React.useRef(null);
 
   // Tự động cuộn xuống dưới khi có tin nhắn mới hoặc đang stream typewriter
