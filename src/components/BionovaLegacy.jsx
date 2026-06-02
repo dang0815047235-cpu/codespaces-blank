@@ -365,14 +365,23 @@ export default function App() {
       alert('Admin chưa thiết lập nhạc nền. Vào tab ⚙️ Admin để tải lên.');
       return;
     }
-    if (!audioElRef.current) return;
+    const el = audioElRef.current;
+    if (!el) return;
     if (isPlayingAudio) {
-      audioElRef.current.pause();
+      el.pause();
       setIsPlayingAudio(false);
     } else {
       try {
-        audioElRef.current.volume = bgVolume / 100;
-        await audioElRef.current.play();
+        el.volume = bgVolume / 100;
+        // iOS Safari: đảm bảo src đã set & load trước khi play (tránh AbortError)
+        if (!el.src || el.src !== appSettings.music_url) {
+          el.src = appSettings.music_url;
+        }
+        el.load();
+        const playPromise = el.play();
+        if (playPromise && typeof playPromise.then === 'function') {
+          await playPromise;
+        }
         setIsPlayingAudio(true);
         if (currentUser && !currentUser.badges.includes('📡')) {
           const updatedBadges = [...currentUser.badges, '📡'];
@@ -381,7 +390,19 @@ export default function App() {
           localStorage.setItem('biotech_current_user', JSON.stringify(updatedUser));
         }
       } catch (e) {
-        alert('Không phát được nhạc: ' + e.message);
+        // iOS thường trả AbortError khi load bị gián đoạn — thử lại 1 lần
+        if (e && (e.name === 'AbortError' || /aborted/i.test(e.message || ''))) {
+          try {
+            await new Promise((r) => setTimeout(r, 250));
+            await el.play();
+            setIsPlayingAudio(true);
+            return;
+          } catch (e2) {
+            alert('Không phát được nhạc trên thiết bị này. Vui lòng bấm lại nút phát. (' + (e2.message || e2.name) + ')');
+            return;
+          }
+        }
+        alert('Không phát được nhạc: ' + (e.message || e.name));
       }
     }
   };
