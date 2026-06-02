@@ -1230,7 +1230,7 @@ export default function App() {
               {/* TAB 6: TRỢ LÝ BIOSEA AI */}
               {activeTab === 'ai-chat' && (
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 flex flex-col h-[480px]">
-                  <div className="flex-1 overflow-y-auto space-y-3 pr-2 text-xs sm:text-sm">
+                  <div ref={chatScrollRef} className="flex-1 overflow-y-auto space-y-3 pr-2 text-xs sm:text-sm scroll-smooth">
                     {messages.map((msg, i) => (
                       <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[85%] rounded-xl p-3 leading-relaxed ${msg.role === 'user' ? 'bg-teal-500 text-slate-950 font-bold whitespace-pre-wrap' : 'bg-slate-950 border border-slate-800 text-slate-200'}`}>
@@ -1272,11 +1272,12 @@ export default function App() {
                         <input type="file" accept="audio/*" onChange={handleUploadMusic} disabled={uploadingMusic} className="text-xs text-slate-300" />
                       </section>
 
-                      <section className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2">
-                        <h3 className="text-sm font-bold text-indigo-400">📄 Tài liệu PDF chung</h3>
-                        <p className="text-[11px] text-slate-400">Hiện tại: {appSettings.pdf_url ? appSettings.pdf_name : 'Chưa thiết lập'}</p>
-                        <input type="file" accept="application/pdf" onChange={handleUploadPdf} disabled={uploadingPdf} className="text-xs text-slate-300" />
-                      </section>
+                       <section className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2">
+                         <h3 className="text-sm font-bold text-indigo-400">📄 Tài liệu chung (mọi định dạng)</h3>
+                         <p className="text-[11px] text-slate-400">Hiện tại: {appSettings.pdf_url ? appSettings.pdf_name : 'Chưa thiết lập'}</p>
+                         <input type="file" onChange={handleUploadPdf} disabled={uploadingPdf} className="text-xs text-slate-300" />
+                         <p className="text-[10px] text-slate-500">Hỗ trợ PDF, DOCX, PPTX, hình ảnh, video, audio... Người dùng có thể xem thử hoặc tải về.</p>
+                       </section>
 
                       <section className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
                         <h3 className="text-sm font-bold text-rose-400">🎬 Video do Admin thêm ({(appSettings.videos||[]).length})</h3>
