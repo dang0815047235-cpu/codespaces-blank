@@ -262,6 +262,13 @@ export default function App() {
   const [aiInput, setAiInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const chatScrollRef = React.useRef(null);
+
+  // Tự động cuộn xuống dưới khi có tin nhắn mới hoặc đang stream typewriter
+  React.useEffect(() => {
+    const el = chatScrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages, isAiLoading]);
 
   // Cấu hình do admin đặt (đồng bộ tất cả thiết bị)
   const [appSettings, setAppSettings] = useState({
