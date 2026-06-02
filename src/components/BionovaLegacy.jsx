@@ -1206,7 +1206,11 @@ export default function App() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                       {[...BADGES_LIST, ...(isAdmin ? ADMIN_BADGES_LIST : [])].map((badge) => {
                         const isAdminBadge = ADMIN_BADGES_LIST.some(b => b.icon === badge.icon);
-                        const hasBadge = isAdmin ? true : currentUser?.badges?.includes(badge.icon);
+                        // Admin chỉ tự động mở các huy hiệu đặc quyền admin.
+                        // Huy hiệu thường vẫn phải đạt điểm như user bình thường.
+                        const hasBadge = isAdminBadge
+                          ? isAdmin
+                          : !!currentUser?.badges?.includes(badge.icon);
                         return (
                           <div key={badge.id} className={`p-3 rounded-xl border flex items-center gap-3 bg-slate-950 transition-all ${isAdminBadge ? 'border-amber-500/50 bg-amber-500/[0.04]' : hasBadge ? 'border-teal-500/40 bg-teal-500/[0.02]' : 'border-slate-900 opacity-30'}`}>
                             <div className="text-2xl">{badge.icon}</div>
