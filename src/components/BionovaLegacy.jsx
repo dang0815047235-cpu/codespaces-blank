@@ -734,8 +734,22 @@ export default function App() {
       const data = await res.json();
       const reply = data?.reply
         || (data?.error ? '⚠️ Lỗi AI: ' + data.error : '⚠️ Không nhận được phản hồi từ AI.');
-      setMessages(prev => [...prev, { role: 'assistant', text: reply }]);
+      // Hiệu ứng đánh máy từng chữ giống ChatGPT
       setIsAiLoading(false);
+      setMessages(prev => [...prev, { role: 'assistant', text: '' }]);
+      const chars = Array.from(reply);
+      let i = 0;
+      const step = Math.max(1, Math.floor(chars.length / 400)); // chunk size để mượt với reply dài
+      const interval = setInterval(() => {
+        i = Math.min(chars.length, i + step);
+        const partial = chars.slice(0, i).join('');
+        setMessages(prev => {
+          const next = [...prev];
+          next[next.length - 1] = { role: 'assistant', text: partial };
+          return next;
+        });
+        if (i >= chars.length) clearInterval(interval);
+      }, 18);
     } catch (error) {
       setMessages(prev => [...prev, { role: 'assistant', text: '⚠️ Lỗi kết nối AI: ' + error.message }]);
       setIsAiLoading(false);
