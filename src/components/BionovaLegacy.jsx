@@ -1343,17 +1343,73 @@ export default function App() {
             </div>
             <div className="space-y-2 text-xs">
               {appSettings.pdf_url ? (
-                <a href={appSettings.pdf_url} target="_blank" rel="noopener noreferrer" download className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between hover:border-teal-500/50 transition-colors">
-                  <span className="text-slate-300 truncate pr-2">📄 {appSettings.pdf_name}</span>
-                  <span className="text-teal-400 font-bold shrink-0">Tải về</span>
-                </a>
+                <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-300 truncate flex-1">📄 {appSettings.pdf_name}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setPreviewFile({ url: appSettings.pdf_url, name: appSettings.pdf_name })}
+                      className="flex-1 px-3 py-1.5 bg-indigo-500/20 text-indigo-300 font-bold rounded-lg hover:bg-indigo-500 hover:text-slate-950 transition-all border border-indigo-500/40"
+                    >
+                      👁️ Xem thử
+                    </button>
+                    <a
+                      href={appSettings.pdf_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download={appSettings.pdf_name}
+                      className="flex-1 px-3 py-1.5 bg-teal-500/20 text-teal-300 font-bold rounded-lg hover:bg-teal-500 hover:text-slate-950 transition-all border border-teal-500/40 text-center"
+                    >
+                      ⬇️ Tải về
+                    </a>
+                  </div>
+                </div>
               ) : (
-                <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 text-slate-500 text-center italic">Admin chưa tải PDF</div>
+                <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 text-slate-500 text-center italic">Admin chưa tải tài liệu</div>
               )}
             </div>
           </div>
         </div>
       </main>
+
+      {/* MODAL XEM THỬ TÀI LIỆU */}
+      {previewFile && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setPreviewFile(null)}>
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-3 border-b border-slate-800 shrink-0">
+              <p className="text-sm font-bold text-slate-200 truncate pr-2">📄 {previewFile.name}</p>
+              <div className="flex items-center gap-2 shrink-0">
+                <a href={previewFile.url} target="_blank" rel="noopener noreferrer" download={previewFile.name} className="text-[11px] bg-teal-500 text-slate-950 font-bold px-3 py-1.5 rounded-lg hover:bg-teal-400">⬇️ Tải về</a>
+                <button onClick={() => setPreviewFile(null)} className="text-[11px] bg-rose-500/20 text-rose-300 font-bold px-3 py-1.5 rounded-lg hover:bg-rose-500 hover:text-slate-950">✕ Đóng</button>
+              </div>
+            </div>
+            <div className="flex-1 bg-slate-950 overflow-auto">
+              {(() => {
+                const url = previewFile.url;
+                const name = (previewFile.name || '').toLowerCase();
+                const ext = name.split('.').pop();
+                const isImage = ['png','jpg','jpeg','gif','webp','svg','bmp'].includes(ext);
+                const isVideo = ['mp4','webm','ogg','mov','m4v'].includes(ext);
+                const isAudio = ['mp3','wav','ogg','m4a','aac','flac'].includes(ext);
+                const isPdf = ext === 'pdf';
+                const isOffice = ['doc','docx','xls','xlsx','ppt','pptx'].includes(ext);
+                if (isImage) return <img src={url} alt={previewFile.name} className="max-w-full max-h-full mx-auto object-contain" />;
+                if (isVideo) return <video src={url} controls className="w-full h-full bg-black" />;
+                if (isAudio) return <div className="p-6 flex items-center justify-center h-full"><audio src={url} controls className="w-full max-w-md" /></div>;
+                if (isPdf) return <iframe src={url} title={previewFile.name} className="w-full h-full" />;
+                if (isOffice) return <iframe src={`https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`} title={previewFile.name} className="w-full h-full bg-white" />;
+                return (
+                  <div className="p-6 text-center text-slate-400 text-sm space-y-3 h-full flex flex-col items-center justify-center">
+                    <p>📦 Không thể xem trực tiếp định dạng <span className="text-teal-400 font-bold">.{ext}</span></p>
+                    <a href={url} target="_blank" rel="noopener noreferrer" download={previewFile.name} className="px-4 py-2 bg-teal-500 text-slate-950 font-bold rounded-lg">⬇️ Tải về để mở</a>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
