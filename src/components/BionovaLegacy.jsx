@@ -1226,7 +1226,7 @@ export default function App() {
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-[11px] font-bold pt-1">
                           <button onClick={() => setThemeStyle('slate')} className={`p-2 rounded-lg border ${themeStyle === 'slate' ? 'bg-teal-500 text-slate-950 border-teal-400' : 'bg-slate-950 border-slate-800 text-slate-400'}`}>Mặc định</button>
-                          <button onClick={() => setThemeStyle('ocean')} className={`p-2 rounded-lg border ${themeStyle === 'ocean' ? 'bg-sky-500 text-slate-950 border-sky-400' : 'bg-slate-950 border-slate-800 text-slate-400'}`}>Đại dương</button>
+                          <button onClick={() => setThemeStyle('ocean')} className={`p-2 rounded-lg border ${themeStyle === 'ocean' ? 'bg-blue-700 text-blue-100 border-blue-500' : 'bg-slate-950 border-slate-800 text-slate-400'}`}>Đại dương</button>
                           <button onClick={() => setThemeStyle('emerald')} className={`p-2 rounded-lg border ${themeStyle === 'emerald' ? 'bg-emerald-500 text-slate-950 border-emerald-400' : 'bg-slate-950 border-slate-800 text-slate-400'}`}>Lục bảo</button>
                       </div>
                     </div>
