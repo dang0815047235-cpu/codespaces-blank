@@ -796,7 +796,7 @@ export default function App() {
   // Áp filter hue-rotate lên toàn bộ app để 3 nút theme có tác dụng thực sự
   // (toàn bộ tone teal/indigo của giao diện sẽ ngả sang xanh dương hoặc xanh lục).
   const wrapperThemeStyle = useMemo(() => {
-    if (themeStyle === 'ocean') return { filter: 'hue-rotate(35deg) saturate(1.05)' };
+    if (themeStyle === 'ocean') return { filter: 'hue-rotate(-25deg) saturate(1.1)' };
     if (themeStyle === 'emerald') return { filter: 'hue-rotate(-18deg) saturate(1.1)' };
     return undefined;
   }, [themeStyle]);
