@@ -788,21 +788,21 @@ export default function App() {
   }, [appSettings.videos, appSettings.default_videos]);
   
   const wrapperThemeClass = useMemo(() => {
-    if (themeStyle === 'ocean') return 'bg-slate-950 text-sky-100';
+    if (themeStyle === 'ocean') return 'bg-[#040d1f] text-blue-100';
     if (themeStyle === 'emerald') return 'bg-stone-950 text-emerald-100';
     return 'bg-slate-950 text-slate-100';
   }, [themeStyle]);
 
-  // Áp filter hue-rotate lên toàn bộ app để 3 nút theme có tác dụng thực sự
-  // (toàn bộ tone teal/indigo của giao diện sẽ ngả sang xanh dương hoặc xanh lục).
+  // Áp filter lên toàn bộ app để 3 nút theme có tác dụng thực sự
+  // Ocean: tone xanh dương sâu thẳm, tối hơn; Emerald: ngả lục.
   const wrapperThemeStyle = useMemo(() => {
-    if (themeStyle === 'ocean') return { filter: 'hue-rotate(-25deg) saturate(1.1)' };
+    if (themeStyle === 'ocean') return { filter: 'hue-rotate(-30deg) saturate(1.2) brightness(0.85)' };
     if (themeStyle === 'emerald') return { filter: 'hue-rotate(-18deg) saturate(1.1)' };
     return undefined;
   }, [themeStyle]);
 
   const accentColorClass = useMemo(() => {
-    if (themeStyle === 'ocean') return 'from-sky-400 to-blue-500 text-sky-400 border-sky-500';
+    if (themeStyle === 'ocean') return 'from-blue-700 to-blue-900 text-blue-300 border-blue-700';
     if (themeStyle === 'emerald') return 'from-emerald-400 to-teal-500 text-emerald-400 border-emerald-500';
     return 'from-teal-400 to-indigo-500 text-teal-400 border-indigo-500';
   }, [themeStyle]);
