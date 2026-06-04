@@ -14,7 +14,7 @@ function shuffleArray(arr) {
   return a;
 }
 function buildShuffledQuiz(questions) {
-  return shuffleArray(questions).map((q) => ({
+  return questions.map((q) => ({
     ...q,
     options: shuffleArray(q.options),
   }));
