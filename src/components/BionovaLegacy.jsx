@@ -777,7 +777,7 @@ export default function App() {
     }
   };
 
-  const progressPercent = useMemo(() => Math.round(((quizIndex + 1) / QUIZ_QUESTIONS.length) * 100), [quizIndex]);
+  const progressPercent = useMemo(() => Math.round(((quizIndex + 1) / quizOrder.length) * 100), [quizIndex, quizOrder.length]);
   const sortedLeaderboard = useMemo(() => [...leaderboard].sort((a, b) => b.score - a.score), [leaderboard]);
   const allVideos = useMemo(() => {
     const admin = (appSettings.videos || []).map(v => ({ topic: 'Admin', thumb: '🎬', duration: '—', ...v }));
@@ -1060,20 +1060,20 @@ export default function App() {
                   {!quizComplete ? (
                     <>
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded font-bold">Phần chuyên sâu: {QUIZ_QUESTIONS[quizIndex].topic}</span>
-                        <span className="font-mono text-slate-400">Câu hỏi: {quizIndex + 1} / {QUIZ_QUESTIONS.length}</span>
+                        <span className="text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded font-bold">Phần chuyên sâu: {quizOrder[quizIndex].topic}</span>
+                        <span className="font-mono text-slate-400">Câu hỏi: {quizIndex + 1} / {quizOrder.length}</span>
                       </div>
                       <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-teal-400 to-indigo-500 transition-all duration-300" style={{ width: `${progressPercent}%` }} />
                       </div>
                       <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                        <p className="text-sm sm:text-base font-bold text-slate-100 leading-relaxed">{QUIZ_QUESTIONS[quizIndex].question}</p>
+                        <p className="text-sm sm:text-base font-bold text-slate-100 leading-relaxed">{quizOrder[quizIndex].question}</p>
                       </div>
                       <div className="grid grid-cols-1 gap-2.5">
-                        {QUIZ_QUESTIONS[quizIndex].options.map((option, idx) => {
+                        {quizOrder[quizIndex].options.map((option, idx) => {
                           let btnStyle = "bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700";
                           if (isAnswered) {
-                            if (option === QUIZ_QUESTIONS[quizIndex].answer) btnStyle = "bg-emerald-500/20 border-emerald-500 text-emerald-400 font-bold";
+                            if (option === quizOrder[quizIndex].answer) btnStyle = "bg-emerald-500/20 border-emerald-500 text-emerald-400 font-bold";
                             else if (option === selectedAnswer) btnStyle = "bg-rose-500/20 border-rose-500 text-rose-400";
                             else btnStyle = "bg-slate-950/40 border-slate-900 text-slate-600 opacity-60";
                           }
@@ -1087,7 +1087,7 @@ export default function App() {
                       {isAnswered && (
                         <div className="flex justify-end pt-2">
                           <button onClick={handleNextQuestion} className="px-5 py-2 rounded-xl bg-gradient-to-r from-teal-400 to-indigo-500 text-slate-950 text-xs font-bold shadow-lg">
-                            {quizIndex === QUIZ_QUESTIONS.length - 1 ? "Xem Tổng Kết Điểm" : "Câu Tiếp Theo →"}
+                            {quizIndex === quizOrder.length - 1 ? "Xem Tổng Kết Điểm" : "Câu Tiếp Theo →"}
                           </button>
                         </div>
                       )}
@@ -1098,7 +1098,7 @@ export default function App() {
                       <h3 className="text-xl font-bold">Hoàn Thành Đợt Khảo Sát Thử Thách!</h3>
                       <div className="max-w-xs mx-auto p-4 bg-slate-950 border border-slate-800 rounded-xl">
                         <span className="text-xs text-slate-500">Kết quả đạt được</span>
-                        <p className="text-3xl font-black text-teal-400 mt-1">{score} / {QUIZ_QUESTIONS.length}</p>
+                        <p className="text-3xl font-black text-teal-400 mt-1">{score} / {quizOrder.length}</p>
                       </div>
                       <button onClick={restartQuiz} className="px-5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold transition-all hover:bg-slate-700">Làm lại từ đầu</button>
                     </div>
