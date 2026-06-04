@@ -863,9 +863,11 @@ export default function App() {
       {/* HEADER */}
       <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${accentColorClass.split(' text-')[0]} flex items-center justify-center shadow-lg`}>
-            <span className="font-bold text-xl">🧫</span>
-          </div>
+          <img
+            src={brandAsset.url}
+            alt="BIONOVA LEGACY"
+            className="w-12 h-12 rounded-xl object-cover shadow-lg ring-1 ring-slate-700"
+          />
           <div>
             <h1 className="text-lg font-bold bg-gradient-to-r from-teal-400 to-indigo-400 bg-clip-text text-transparent">BIONOVA LEGACY</h1>
             <p className="text-xs text-slate-400 font-medium">Hệ thống Khám phá Chu kì Tế bào & Phân bào</p>
@@ -873,7 +875,7 @@ export default function App() {
         </div>
         <div className="flex items-center gap-3">
           <button onClick={toggleBackgroundMusic} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${isPlayingAudio ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30' : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-600'}`}>
-            {isPlayingAudio ? `🎵 ${appSettings.music_title}: ${bgVolume}%` : (appSettings.music_url ? '🔇 Nhạc nền: Tắt' : '⚠️ Chưa có nhạc')}
+            {isPlayingAudio ? `🎵 Nhạc nền: Bật (${bgVolume}%)` : (appSettings.music_url ? '🔇 Nhạc nền: Tắt' : '⚠️ Chưa có nhạc')}
           </button>
           <div className="flex items-center gap-3 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-xl">
             <div className="text-right">
