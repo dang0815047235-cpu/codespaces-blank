@@ -13,6 +13,7 @@ function shuffleArray(arr) {
   }
   return a;
 }
+
 function buildShuffledQuiz(questions) {
   return questions.map((q) => ({
     ...q,
