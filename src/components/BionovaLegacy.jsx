@@ -790,7 +790,15 @@ export default function App() {
   const wrapperThemeClass = useMemo(() => {
     if (themeStyle === 'ocean') return 'bg-slate-950 text-sky-100';
     if (themeStyle === 'emerald') return 'bg-stone-950 text-emerald-100';
-    return 'bg-slate-950 text-slate-100'; 
+    return 'bg-slate-950 text-slate-100';
+  }, [themeStyle]);
+
+  // Áp filter hue-rotate lên toàn bộ app để 3 nút theme có tác dụng thực sự
+  // (toàn bộ tone teal/indigo của giao diện sẽ ngả sang xanh dương hoặc xanh lục).
+  const wrapperThemeStyle = useMemo(() => {
+    if (themeStyle === 'ocean') return { filter: 'hue-rotate(35deg) saturate(1.05)' };
+    if (themeStyle === 'emerald') return { filter: 'hue-rotate(-18deg) saturate(1.1)' };
+    return undefined;
   }, [themeStyle]);
 
   const accentColorClass = useMemo(() => {
@@ -856,7 +864,10 @@ export default function App() {
 
   // GIAO DIỆN CHÍNH SAU KHI ĐÃ ĐĂNG KÝ THÀNH CÔNG
   return (
-    <div className={`min-h-screen font-sans flex flex-col transition-colors duration-300 ${wrapperThemeClass}`}>
+    <div
+      className={`min-h-screen font-sans flex flex-col transition-colors duration-300 ${wrapperThemeClass}`}
+      style={wrapperThemeStyle}
+    >
       {/* Audio nền dùng chung cho mọi user */}
       <audio ref={audioElRef} src={appSettings.music_url || undefined} loop preload="metadata" playsInline crossOrigin="anonymous" />
       
