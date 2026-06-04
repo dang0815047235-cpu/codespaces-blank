@@ -2,6 +2,23 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import brandAsset from '@/assets/bionova-brand.png.asset.json';
+
+// Trộn ngẫu nhiên mảng (Fisher–Yates) — dùng cho thứ tự câu hỏi & đáp án
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function buildShuffledQuiz(questions) {
+  return shuffleArray(questions).map((q) => ({
+    ...q,
+    options: shuffleArray(q.options),
+  }));
+}
 
 function VideoAdminForm({ onUploadFile, onAddUrl }) {
   const [title, setTitle] = React.useState('');
@@ -258,6 +275,8 @@ export default function App() {
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [quizComplete, setQuizComplete] = useState(false);
+  // Thứ tự câu hỏi & đáp án được random mỗi lần làm bài
+  const [quizOrder, setQuizOrder] = useState(() => buildShuffledQuiz(QUIZ_QUESTIONS));
 
   const [aiInput, setAiInput] = useState('');
   const [messages, setMessages] = useState([]);
@@ -582,7 +601,7 @@ export default function App() {
     if (isAnswered) return;
     setSelectedAnswer(option);
     setIsAnswered(true);
-    if (option === QUIZ_QUESTIONS[quizIndex].answer) {
+    if (option === quizOrder[quizIndex].answer) {
       setScore(prev => {
         const nextScore = prev + 1;
         if (isLoggedIn) updateGlobalStats(nextScore);
@@ -690,7 +709,7 @@ export default function App() {
   };
 
   const handleNextQuestion = () => {
-    if (quizIndex < QUIZ_QUESTIONS.length - 1) {
+    if (quizIndex < quizOrder.length - 1) {
       setQuizIndex(prev => prev + 1);
       setSelectedAnswer(null);
       setIsAnswered(false);
@@ -700,6 +719,7 @@ export default function App() {
   };
 
   const restartQuiz = () => {
+    setQuizOrder(buildShuffledQuiz(QUIZ_QUESTIONS));
     setQuizIndex(0);
     setSelectedAnswer(null);
     setIsAnswered(false);
