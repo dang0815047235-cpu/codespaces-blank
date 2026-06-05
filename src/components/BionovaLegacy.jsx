@@ -1029,7 +1029,7 @@ export default function App() {
                       <h2 className="text-xl font-bold">Thư Viện Bài Giảng & Phim Mô Phỏng</h2>
                       <p className="text-xs text-slate-400 mt-1">Chọn một video bên dưới để khởi chạy trình phát đa phương tiện trực tiếp.</p>
                     </div>
-                    <span className="text-xs font-mono bg-indigo-500/20 text-indigo-400 px-2 py-1 rounded">15 Video Trực Quan</span>
+                    <span className="text-xs font-mono bg-indigo-500/20 text-indigo-400 px-2 py-1 rounded">{allVideos.length} Video Trực Quan</span>
                   </div>
 
                   {/* TRÌNH PHÁT VIDEO CHUYÊN NGHIỆP HIỆN TRÊN WEB KHI ẤN XEM */}
