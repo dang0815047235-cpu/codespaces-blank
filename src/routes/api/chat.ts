@@ -18,6 +18,7 @@ export const Route = createFileRoute('/api/chat')({
               ...(system ? [{ role: 'system', content: system }] : []),
               ...messages.map(m => ({ role: m.role, content: m.content })),
             ],
+            stream: true,
           };
 
           const r = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -34,9 +35,15 @@ export const Route = createFileRoute('/api/chat')({
             const errText = await r.text();
             return new Response(JSON.stringify({ error: errText, status: r.status }), { status: r.status });
           }
-          const data = await r.json() as any;
-          const reply = data?.choices?.[0]?.message?.content ?? '';
-          return Response.json({ reply });
+          // Pass through the SSE stream so the client renders tokens as they arrive.
+          return new Response(r.body, {
+            status: 200,
+            headers: {
+              'Content-Type': 'text/event-stream; charset=utf-8',
+              'Cache-Control': 'no-cache, no-transform',
+              'Connection': 'keep-alive',
+            },
+          });
         } catch (e: any) {
           return new Response(JSON.stringify({ error: e?.message || 'AI error' }), { status: 500 });
         }
