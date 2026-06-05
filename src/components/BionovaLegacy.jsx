@@ -276,8 +276,10 @@ export default function App() {
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [quizComplete, setQuizComplete] = useState(false);
-  // Thứ tự câu hỏi & đáp án được random mỗi lần làm bài
+  // Chỉ random thứ tự đáp án, KHÔNG random thứ tự câu hỏi
   const [quizOrder, setQuizOrder] = useState(() => buildShuffledQuiz(QUIZ_QUESTIONS));
+  const [aiQuizHint, setAiQuizHint] = useState('');
+  const [aiQuizLoading, setAiQuizLoading] = useState(false);
 
   const [aiInput, setAiInput] = useState('');
   const [messages, setMessages] = useState([]);
