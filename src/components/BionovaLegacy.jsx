@@ -1166,8 +1166,10 @@ export default function App() {
                           {aiQuizLoading ? '🧠 AI đang suy luận...' : '🧠 Nhờ AI giải câu này'}
                         </button>
                         {aiQuizHint && (
-                          <div className="p-3 rounded-xl bg-slate-950 border border-indigo-500/30 text-xs text-slate-200 leading-relaxed whitespace-pre-wrap">
-                            {aiQuizHint}
+                          <div className="p-3 rounded-xl bg-slate-950 border border-indigo-500/30 text-xs text-slate-200 leading-relaxed">
+                            <div className="prose prose-invert prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-strong:text-teal-300 prose-code:text-amber-300 prose-code:bg-slate-900 prose-code:px-1 prose-code:rounded prose-a:text-teal-400">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>{aiQuizHint}</ReactMarkdown>
+                            </div>
                           </div>
                         )}
                       </div>
