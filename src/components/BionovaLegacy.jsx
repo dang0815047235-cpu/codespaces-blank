@@ -716,6 +716,7 @@ export default function App() {
       setQuizIndex(prev => prev + 1);
       setSelectedAnswer(null);
       setIsAnswered(false);
+      setAiQuizHint('');
     } else {
       setQuizComplete(true);
     }
@@ -728,6 +729,31 @@ export default function App() {
     setIsAnswered(false);
     setScore(0);
     setQuizComplete(false);
+    setAiQuizHint('');
+  };
+
+  // 🧠 AI giải quyết câu hỏi quiz hiện tại
+  const handleAiSolveQuiz = async () => {
+    if (aiQuizLoading) return;
+    const q = quizOrder[quizIndex];
+    if (!q) return;
+    setAiQuizLoading(true);
+    setAiQuizHint('');
+    try {
+      const system = 'Bạn là BIOSEA AI — chuyên gia Sinh học THPT. Hãy phân tích câu trắc nghiệm và chọn đáp án đúng. Trả lời ngắn gọn bằng tiếng Việt theo định dạng:\n**Đáp án:** <nguyên văn đáp án đúng>\n**Giải thích:** <1-3 câu ngắn gọn, rõ ràng>';
+      const user = `Câu hỏi: ${q.question}\nCác lựa chọn:\n${q.options.map((o,i)=>`${String.fromCharCode(65+i)}. ${o}`).join('\n')}`;
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system, messages: [{ role: 'user', content: user }] }),
+      });
+      const data = await res.json();
+      setAiQuizHint(data?.reply || (data?.error ? '⚠️ Lỗi AI: ' + data.error : '⚠️ Không có phản hồi từ AI.'));
+    } catch (err) {
+      setAiQuizHint('⚠️ Lỗi kết nối AI: ' + err.message);
+    } finally {
+      setAiQuizLoading(false);
+    }
   };
 
   // Hệ thống Chat hỗ trợ AI
