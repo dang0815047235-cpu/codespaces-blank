@@ -1131,6 +1131,20 @@ export default function App() {
                           </button>
                         </div>
                       )}
+                      <div className="pt-2 border-t border-slate-800 space-y-2">
+                        <button
+                          onClick={handleAiSolveQuiz}
+                          disabled={aiQuizLoading}
+                          className="w-full px-4 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/40 text-indigo-300 text-xs font-bold hover:bg-indigo-500/20 transition-all disabled:opacity-50"
+                        >
+                          {aiQuizLoading ? '🧠 AI đang suy luận...' : '🧠 Nhờ AI giải câu này'}
+                        </button>
+                        {aiQuizHint && (
+                          <div className="p-3 rounded-xl bg-slate-950 border border-indigo-500/30 text-xs text-slate-200 leading-relaxed whitespace-pre-wrap">
+                            {aiQuizHint}
+                          </div>
+                        )}
+                      </div>
                     </>
                   ) : (
                     <div className="text-center py-8 space-y-4">
