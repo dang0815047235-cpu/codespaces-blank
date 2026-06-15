@@ -330,6 +330,18 @@ export default function App() {
   const [previewFile, setPreviewFile] = useState(null);
   const chatScrollRef = React.useRef(null);
 
+  // 🆘 Bong bóng hỗ trợ AI + nhắn admin
+  const [supportOpen, setSupportOpen] = useState(false);
+  const [supportMode, setSupportMode] = useState('ai'); // 'ai' | 'admin'
+  const [supportInput, setSupportInput] = useState('');
+  const [supportMessages, setSupportMessages] = useState([]); // tin AI cho user
+  const [supportLoading, setSupportLoading] = useState(false);
+  const [adminTickets, setAdminTickets] = useState([]); // toàn bộ ticket (admin xem)
+  const [myTickets, setMyTickets] = useState([]); // ticket của user hiện tại
+  const [adminReplyDraft, setAdminReplyDraft] = useState({}); // {ticketId: text}
+  const [supportSentMsg, setSupportSentMsg] = useState('');
+  const supportScrollRef = React.useRef(null);
+
   // Tự động cuộn xuống dưới khi có tin nhắn mới hoặc đang stream typewriter
   React.useEffect(() => {
     const el = chatScrollRef.current;
