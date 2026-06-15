@@ -320,6 +320,7 @@ const GET_TITLE_BY_SCORE = (score) => {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('concepts');
+  const [menuOpen, setMenuOpen] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [bgVolume, setBgVolume] = useState(25); 
   const audioElRef = useRef(null);
