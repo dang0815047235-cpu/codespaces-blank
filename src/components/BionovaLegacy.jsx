@@ -1537,6 +1537,36 @@ export default function App() {
                       })}
                     </div>
                   </div>
+
+                  {/* KHO DANH HIỆU (~45) — Admin tự động unlock tất cả */}
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                    <h3 className="text-base font-bold text-slate-100 border-b border-slate-800 pb-3 mb-4">
+                      🎖️ Kho Danh Hiệu Bionova ({TITLES_LIST.length}) {isAdmin && <span className="text-amber-400">— Admin đã mở khoá toàn bộ</span>}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                      {TITLES_LIST.map((t) => {
+                        const userScore = currentUser?.score || 0;
+                        const unlocked = isAdmin || userScore >= t.min;
+                        const current = (currentUser?.title === t.name);
+                        return (
+                          <div key={t.name} className={`p-3 rounded-xl border flex items-center gap-3 bg-slate-950 transition-all ${current ? 'border-amber-400 bg-amber-500/[0.06]' : unlocked ? 'border-teal-500/40' : 'border-slate-900 opacity-40'}`}>
+                            <div className="text-[10px] font-extrabold w-10 text-center text-slate-500">{t.min}+</div>
+                            <div className="flex-1">
+                              <p className="font-bold text-slate-200">{t.name}</p>
+                              <p className="text-[10px] text-slate-400 mt-0.5">{t.desc}</p>
+                            </div>
+                            {current ? (
+                              <span className="text-[9px] bg-amber-500 text-slate-950 font-extrabold px-1.5 py-0.5 rounded uppercase">Hiện tại</span>
+                            ) : unlocked ? (
+                              <span className="text-[9px] bg-emerald-500/20 text-emerald-400 font-extrabold px-1.5 py-0.5 rounded uppercase">{isAdmin ? 'Admin' : 'Đã mở'}</span>
+                            ) : (
+                              <span className="text-[9px] bg-slate-800 text-slate-500 font-medium px-1.5 py-0.5 rounded">Khóa</span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               )}
 
