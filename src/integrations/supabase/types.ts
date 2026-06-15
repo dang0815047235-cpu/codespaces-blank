@@ -116,6 +116,42 @@ export type Database = {
         }
         Relationships: []
       }
+      support_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          real_name: string | null
+          replied_at: string | null
+          reply: string | null
+          status: string
+          user_id: string | null
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          real_name?: string | null
+          replied_at?: string | null
+          reply?: string | null
+          status?: string
+          user_id?: string | null
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          real_name?: string | null
+          replied_at?: string | null
+          reply?: string | null
+          status?: string
+          user_id?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
