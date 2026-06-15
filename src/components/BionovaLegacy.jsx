@@ -1552,6 +1552,46 @@ export default function App() {
                           ))}
                         </div>
                       </section>
+
+                      <section className="bg-slate-950 border border-rose-500/30 rounded-xl p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-sm font-bold text-rose-400">📨 Hộp thư hỗ trợ ({adminTickets.length})</h3>
+                          <span className="text-[10px] text-amber-400 font-bold">Mới: {adminTickets.filter(t => t.status === 'open').length}</span>
+                        </div>
+                        <p className="text-[10px] text-slate-500">Tin nhắn từ người dùng khi AI không xử lý được. Trả lời để người dùng nhận ngay trong bong bóng chat.</p>
+                        <div className="space-y-2 max-h-[520px] overflow-y-auto">
+                          {adminTickets.length === 0 && <div className="text-xs text-slate-500 italic p-3">Chưa có tin nhắn nào.</div>}
+                          {adminTickets.map(t => (
+                            <div key={t.id} className={`p-3 rounded-xl border ${t.status === 'open' ? 'border-rose-500/40 bg-rose-500/5' : 'border-slate-800 bg-slate-900'}`}>
+                              <div className="flex items-center justify-between mb-1">
+                                <div className="text-xs">
+                                  <span className="font-bold text-slate-100">{t.real_name || t.username}</span>
+                                  <span className="text-slate-500"> @{t.username}</span>
+                                  <span className={`ml-2 text-[9px] font-bold px-1.5 py-0.5 rounded ${t.status === 'open' ? 'bg-rose-500 text-slate-950' : 'bg-emerald-500/20 text-emerald-400'}`}>{t.status === 'open' ? 'MỚI' : 'ĐÃ TRẢ LỜI'}</span>
+                                </div>
+                                <button onClick={() => handleDeleteTicket(t.id)} className="text-rose-400 text-[10px] font-bold">Xoá</button>
+                              </div>
+                              <div className="text-[10px] text-slate-500 mb-1">{new Date(t.created_at).toLocaleString('vi-VN')}</div>
+                              <div className="text-xs text-slate-200 bg-slate-950 border border-slate-800 rounded p-2 whitespace-pre-wrap">{t.message}</div>
+                              {t.reply && (
+                                <div className="mt-2 text-xs text-emerald-300 bg-emerald-500/5 border border-emerald-500/30 rounded p-2 whitespace-pre-wrap">
+                                  <span className="text-[10px] font-bold text-emerald-400">↳ Phản hồi:</span> {t.reply}
+                                </div>
+                              )}
+                              <div className="mt-2 flex gap-2">
+                                <textarea
+                                  value={adminReplyDraft[t.id] || ''}
+                                  onChange={(e) => setAdminReplyDraft(prev => ({ ...prev, [t.id]: e.target.value }))}
+                                  placeholder={t.reply ? 'Cập nhật phản hồi…' : 'Nhập phản hồi cho người dùng…'}
+                                  rows={2}
+                                  className="flex-1 bg-slate-950 border border-slate-800 rounded px-2 py-1.5 text-xs text-slate-100"
+                                />
+                                <button onClick={() => handleAdminReply(t)} className="px-3 py-1.5 bg-emerald-500 text-slate-950 text-xs font-bold rounded self-end">Gửi</button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
                     </div>
                   )}
                 </div>
