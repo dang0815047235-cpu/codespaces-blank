@@ -263,23 +263,59 @@ const ADMIN_BADGES_LIST = [
   { id: 'a5', name: '🔱 Quyền Trượng Di Truyền', desc: 'Quyền lực tuyệt đối với mọi học viên', icon: '🔱' }
 ];
 
-// 🏅 HỆ THỐNG 15 DANH HIỆU NÂNG CẤP THEO TIẾN TRÌNH ĐIỂM
+// 🏅 HỆ THỐNG ~45 DANH HIỆU NÂNG CẤP THEO TIẾN TRÌNH ĐIỂM
+// Sắp xếp theo `min` tăng dần — GET_TITLE_BY_SCORE chọn danh hiệu có min cao nhất ≤ score.
+const TITLES_LIST = [
+  { min: 0,  name: "🥚 Tế Bào Sơ Cấp",          desc: "Chưa làm bài — khởi đầu hành trình" },
+  { min: 1,  name: "🌱 Hợp Tử Sơ Sinh",         desc: "Đạt 1+ câu đúng" },
+  { min: 3,  name: "🪺 Phôi Mầm Bionova",       desc: "Đạt 3+ câu đúng" },
+  { min: 6,  name: "🔬 Tập Sự Kính Hiển Vi",    desc: "Đạt 6+ câu đúng" },
+  { min: 9,  name: "🧫 Nhà Quan Sát Tế Bào",    desc: "Đạt 9+ câu đúng" },
+  { min: 12, name: "🌿 Mầm Sống Pha G1",        desc: "Đạt 12+ câu đúng" },
+  { min: 15, name: "🧪 Thực Tập Sinh Phòng Lab",desc: "Đạt 15+ câu đúng" },
+  { min: 18, name: "🧬 Thợ Săn Pha S",          desc: "Đạt 18+ câu đúng" },
+  { min: 22, name: "🧠 Học Viên Sinh Học",      desc: "Đạt 22+ câu đúng" },
+  { min: 25, name: "⏳ Trùm Cuối Pha G2",       desc: "Đạt 25+ câu đúng" },
+  { min: 28, name: "🛰️ Trinh Sát ADN",          desc: "Đạt 28+ câu đúng" },
+  { min: 32, name: "🚦 Trưởng Tháp Checkpoint", desc: "Đạt 32+ câu đúng" },
+  { min: 35, name: "🧱 Kiến Tạo Vi Quản",       desc: "Đạt 35+ câu đúng" },
+  { min: 38, name: "🌀 Tiền Bối Kì Đầu",        desc: "Đạt 38+ câu đúng" },
+  { min: 40, name: "💠 Chuyên Gia Nguyên Phân", desc: "Đạt 40+ câu đúng" },
+  { min: 42, name: "🪞 Người Nhân Đôi NST",     desc: "Đạt 42+ câu đúng" },
+  { min: 45, name: "🏛️ Trưởng Lão Tế Bào Chất", desc: "Đạt 45+ câu đúng" },
+  { min: 48, name: "🧬 Kĩ Sư Trao Đổi Chéo",    desc: "Đạt 48+ câu đúng" },
+  { min: 50, name: "🎯 Xạ Thủ Tâm Động",        desc: "Đạt 50+ câu đúng" },
+  { min: 52, name: "📜 Học Sĩ Di Truyền",       desc: "Đạt 52+ câu đúng" },
+  { min: 55, name: "🔮 Chỉ Huy Kì Giữa II",     desc: "Đạt 55+ câu đúng" },
+  { min: 58, name: "🦋 Vũ Công Thoi Phân Bào",  desc: "Đạt 58+ câu đúng" },
+  { min: 60, name: "🏆 Đại Sứ Chromatid",       desc: "Đạt 60+ câu đúng" },
+  { min: 62, name: "🏹 Chiến Binh Kì Sau II",   desc: "Đạt 62+ câu đúng" },
+  { min: 64, name: "🪐 Nhà Du Hành Nhân Tế Bào",desc: "Đạt 64+ câu đúng" },
+  { min: 66, name: "🛡️ Vệ Sĩ Bộ Gen",           desc: "Đạt 66+ câu đúng" },
+  { min: 68, name: "🌌 Du Tử Vũ Trụ ADN",       desc: "Đạt 68+ câu đúng" },
+  { min: 70, name: "⚡ Đột Phá Giảm Phân",       desc: "Đạt 70+ câu đúng" },
+  { min: 72, name: "🦴 Bậc Thầy Phân Đôi",      desc: "Đạt 72+ câu đúng" },
+  { min: 74, name: "🧙 Pháp Sư Sinh Học",       desc: "Đạt 74+ câu đúng" },
+  { min: 76, name: "🔱 Chúa Tể Kì Cuối",        desc: "Đạt 76+ câu đúng" },
+  { min: 78, name: "🌟 Giáo Sư Phân Bào",        desc: "Đạt 78+ câu đúng" },
+  { min: 80, name: "🎓 Tiến Sĩ Tế Bào Học",     desc: "Đạt 80+ câu đúng" },
+  { min: 82, name: "🪄 Phù Thủy Crossing-Over", desc: "Đạt 82+ câu đúng" },
+  { min: 84, name: "🦅 Đại Bàng Nhiễm Sắc",     desc: "Đạt 84+ câu đúng" },
+  { min: 85, name: "🪐 Học Giả Tế Bào Học",     desc: "Đạt 85+ câu đúng" },
+  { min: 86, name: "🐉 Long Vương Giảm Phân",   desc: "Đạt 86+ câu đúng" },
+  { min: 87, name: "💫 Tinh Linh Bionova",      desc: "Đạt 87+ câu đúng" },
+  { min: 88, name: "🌠 Sao Băng Di Truyền",     desc: "Đạt 88+ câu đúng" },
+  { min: 89, name: "🏵️ Đại Hiền Triết Sinh Học",desc: "Đạt 89+ câu đúng" },
+  { min: 90, name: "👑 Đại Đế Di Truyền",        desc: "Đạt tối đa 90/90 — đỉnh cao Bionova" },
+];
+
 const GET_TITLE_BY_SCORE = (score) => {
-  if (score >= 90) return "👑 Đại Đế Di Truyền";
-  if (score >= 85) return "🪐 Học Giả Tế Bào Học";
-  if (score >= 78) return "🌟 Giáo Sư Phân Bào";
-  if (score >= 70) return "⚡ Đột Phá Giảm Phân";
-  if (score >= 62) return "🏹 Chiến Binh Kì Sau II";
-  if (score >= 55) return "🔮 Chỉ Huy Kì Giữa II";
-  if (score >= 48) return "🧬 Kĩ Sư Trao Đổi Chéo";
-  if (score >= 40) return "💠 Chuyên Gia Nguyên Phân";
-  if (score >= 32) return "🚦 Trưởng Tháp Checkpoint";
-  if (score >= 25) return "⏳ Trùm Cuối Pha G2";
-  if (score >= 18) return "🧬 Thợ Săn Pha S";
-  if (score >= 12) return "🌿 Mầm Sống Pha G1";
-  if (score >= 6) return "🔬 Tập Sự Kính Hiển Vi";
-  if (score >= 1) return "🌱 Hợp Tử Sơ Sinh";
-  return "🥚 Tế Bào Sơ Cấp";
+  let result = TITLES_LIST[0].name;
+  for (const t of TITLES_LIST) {
+    if (score >= t.min) result = t.name;
+    else break;
+  }
+  return result;
 };
 
 export default function App() {
