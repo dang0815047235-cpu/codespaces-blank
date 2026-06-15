@@ -1679,6 +1679,104 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* 🆘 BONG BÓNG HỖ TRỢ AI + NHẮN ADMIN */}
+      <button
+        onClick={() => setSupportOpen(v => !v)}
+        className="fixed bottom-5 right-5 z-[90] w-14 h-14 rounded-full bg-gradient-to-br from-teal-400 to-indigo-500 text-slate-950 text-2xl shadow-2xl shadow-teal-500/30 hover:scale-110 transition-transform flex items-center justify-center"
+        aria-label="Mở hỗ trợ"
+        title="Hỗ trợ AI / Nhắn Admin"
+      >
+        {supportOpen ? '✕' : '💬'}
+        {!supportOpen && myTickets.some(t => t.status === 'answered' && t.reply) && (
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">!</span>
+        )}
+      </button>
+      {supportOpen && (
+        <div className="fixed bottom-24 right-5 z-[95] w-[92vw] max-w-sm h-[70vh] max-h-[560px] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+          <div className="px-3 py-2 border-b border-slate-800 bg-slate-950 flex items-center gap-1">
+            <button onClick={() => setSupportMode('ai')} className={`flex-1 px-2 py-1.5 rounded-lg text-[11px] font-bold ${supportMode==='ai' ? 'bg-teal-500 text-slate-950' : 'text-slate-400'}`}>🤖 AI Hỗ Trợ</button>
+            <button onClick={() => setSupportMode('admin')} className={`flex-1 px-2 py-1.5 rounded-lg text-[11px] font-bold ${supportMode==='admin' ? 'bg-amber-500 text-slate-950' : 'text-slate-400'}`}>
+              📨 Nhắn Admin
+              {myTickets.some(t => t.status === 'answered' && t.reply) && <span className="ml-1 inline-block w-1.5 h-1.5 bg-rose-500 rounded-full" />}
+            </button>
+          </div>
+
+          {supportMode === 'ai' && (
+            <>
+              <div ref={supportScrollRef} className="flex-1 overflow-y-auto p-3 space-y-2 text-xs">
+                {supportMessages.length === 0 && (
+                  <div className="text-slate-400 leading-relaxed p-2">
+                    👋 Xin chào! Mình là <b className="text-teal-400">BIOSEA SUPPORT</b>. Mô tả lỗi/khó khăn bạn đang gặp khi dùng app, mình sẽ hướng dẫn ngay.
+                    <div className="mt-2 text-[10px] text-slate-500 italic">Nếu vấn đề vượt quyền hạn AI, chuyển sang tab <b className="text-amber-400">📨 Nhắn Admin</b>.</div>
+                  </div>
+                )}
+                {supportMessages.map((m, i) => (
+                  <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[88%] rounded-xl p-2.5 ${m.role === 'user' ? 'bg-teal-500 text-slate-950 font-bold whitespace-pre-wrap' : 'bg-slate-950 border border-slate-800 text-slate-200'}`}>
+                      {m.role === 'user' ? m.text : (
+                        <div className="prose prose-invert prose-sm max-w-none prose-p:my-1 prose-li:my-0">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.text || '…'}</ReactMarkdown>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <form onSubmit={handleSupportAi} className="p-2 border-t border-slate-800 flex gap-2">
+                <input
+                  value={supportInput}
+                  onChange={(e) => setSupportInput(e.target.value)}
+                  placeholder="Mô tả lỗi bạn đang gặp…"
+                  className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100"
+                />
+                <button type="submit" disabled={supportLoading || !supportInput.trim()} className="px-3 py-2 bg-teal-500 text-slate-950 text-xs font-bold rounded-lg disabled:opacity-40">
+                  {supportLoading ? '…' : 'Gửi'}
+                </button>
+              </form>
+            </>
+          )}
+
+          {supportMode === 'admin' && (
+            <>
+              <div className="flex-1 overflow-y-auto p-3 space-y-2 text-xs">
+                <div className="text-[11px] text-slate-400 bg-amber-500/5 border border-amber-500/30 rounded-lg p-2">
+                  📨 Gửi trực tiếp cho Quản trị viên. Dùng khi AI không xử lý được (khôi phục mật khẩu, lỗi dữ liệu, khiếu nại điểm…).
+                </div>
+                {myTickets.length === 0 && <div className="text-slate-500 italic p-2">Bạn chưa gửi tin nhắn nào cho Admin.</div>}
+                {myTickets.map(t => (
+                  <div key={t.id} className="space-y-1">
+                    <div className="flex justify-end">
+                      <div className="max-w-[88%] rounded-xl p-2.5 bg-amber-500 text-slate-950 font-bold whitespace-pre-wrap">{t.message}</div>
+                    </div>
+                    <div className="text-[9px] text-slate-500 text-right">{new Date(t.created_at).toLocaleString('vi-VN')} · {t.status === 'open' ? '⏳ Chờ Admin' : '✅ Đã trả lời'}</div>
+                    {t.reply && (
+                      <div className="flex justify-start">
+                        <div className="max-w-[88%] rounded-xl p-2.5 bg-slate-950 border border-emerald-500/40 text-emerald-200 whitespace-pre-wrap">
+                          <div className="text-[9px] font-bold text-emerald-400 mb-1">🛡️ ADMIN trả lời:</div>
+                          {t.reply}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              {supportSentMsg && <div className="px-3 py-1 text-[11px] text-emerald-400 bg-emerald-500/5 border-t border-emerald-500/20">{supportSentMsg}</div>}
+              <form onSubmit={handleSendToAdmin} className="p-2 border-t border-slate-800 flex gap-2">
+                <input
+                  value={supportInput}
+                  onChange={(e) => setSupportInput(e.target.value)}
+                  placeholder="Tin nhắn gửi Admin…"
+                  className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100"
+                />
+                <button type="submit" disabled={supportLoading || !supportInput.trim()} className="px-3 py-2 bg-amber-500 text-slate-950 text-xs font-bold rounded-lg disabled:opacity-40">
+                  Gửi
+                </button>
+              </form>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
