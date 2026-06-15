@@ -348,6 +348,11 @@ export default function App() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, isAiLoading]);
 
+  React.useEffect(() => {
+    const el = supportScrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [supportMessages, supportLoading, supportOpen, supportMode]);
+
   // Cấu hình do admin đặt (đồng bộ tất cả thiết bị)
   const [appSettings, setAppSettings] = useState({
     music_url: '',
