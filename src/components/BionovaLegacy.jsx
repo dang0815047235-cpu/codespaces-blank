@@ -1095,6 +1095,15 @@ export default function App() {
       {/* HEADER */}
       <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setMenuOpen(v => !v)}
+            aria-label="Mở menu"
+            className="relative w-10 h-10 flex flex-col items-center justify-center gap-1.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-teal-400 transition-all"
+          >
+            <span className={`block h-0.5 w-5 bg-teal-400 transition-transform ${menuOpen ? 'translate-y-2 rotate-45' : ''}`}></span>
+            <span className={`block h-0.5 w-5 bg-teal-400 transition-opacity ${menuOpen ? 'opacity-0' : ''}`}></span>
+            <span className={`block h-0.5 w-5 bg-teal-400 transition-transform ${menuOpen ? '-translate-y-2 -rotate-45' : ''}`}></span>
+          </button>
           <img
             src={brandAsset.url}
             alt="BIONOVA LEGACY"
@@ -1119,16 +1128,49 @@ export default function App() {
         </div>
       </header>
 
-      {/* TABS MENU */}
-      <nav className="bg-slate-900 border-b border-slate-800 flex justify-center flex-wrap gap-1 p-2">
-        <button onClick={() => setActiveTab('concepts')} className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeTab === 'concepts' ? 'bg-teal-500 text-slate-950 shadow' : 'text-slate-400 hover:text-slate-200'}`}>📚 Khái Niệm</button>
-        <button onClick={() => setActiveTab('videos')} className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeTab === 'videos' ? 'bg-teal-500 text-slate-950 shadow' : 'text-slate-400 hover:text-slate-200'}`}>🎥 Thư Viện Video ({allVideos.length})</button>
-        <button onClick={() => setActiveTab('quiz')} className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeTab === 'quiz' ? 'bg-teal-500 text-slate-950 shadow' : 'text-slate-400 hover:text-slate-200'}`}>✍️ Trắc Nghiệm (90 Câu)</button>
-        <button onClick={() => setActiveTab('leaderboard')} className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeTab === 'leaderboard' ? 'bg-teal-500 text-slate-950 shadow' : 'text-slate-400 hover:text-slate-200'}`}>🏆 Bảng Xếp Hạng</button>
-        <button onClick={() => setActiveTab('settings')} className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeTab === 'settings' ? 'bg-indigo-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}>⚙️ Thành Tích ({isAdmin ? `${BADGES_LIST.length + ADMIN_BADGES_LIST.length}/${BADGES_LIST.length + ADMIN_BADGES_LIST.length}` : `${currentUser?.badges?.length || 0}/${BADGES_LIST.length}`})</button>
-        <button onClick={() => setActiveTab('ai-chat')} className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeTab === 'ai-chat' ? 'bg-teal-500 text-slate-950 shadow' : 'text-slate-400 hover:text-slate-200'}`}>🤖 BIOSEA AI</button>
-        <button onClick={() => setActiveTab('admin')} className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${activeTab === 'admin' ? 'bg-amber-500 text-slate-950' : 'text-slate-400 hover:text-slate-200'}`}>🔐 Admin</button>
-      </nav>
+      {/* OFF-CANVAS MENU (mở từ nút 3 gạch) */}
+      {menuOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40"
+            onClick={() => setMenuOpen(false)}
+          />
+          <aside className="fixed top-0 left-0 h-full w-72 bg-slate-900 border-r border-slate-800 z-50 p-4 shadow-2xl flex flex-col gap-2 overflow-y-auto">
+            <div className="flex items-center justify-between mb-2 pb-3 border-b border-slate-800">
+              <h2 className="text-sm font-bold text-teal-400">📂 Khu Vực Bionova</h2>
+              <button onClick={() => setMenuOpen(false)} className="text-slate-400 hover:text-rose-400 text-lg leading-none">✕</button>
+            </div>
+            {[
+              { id: 'concepts',    label: '📚 Khái Niệm',                       color: 'teal' },
+              { id: 'videos',      label: `🎥 Thư Viện Video (${allVideos.length})`, color: 'teal' },
+              { id: 'quiz',        label: '✍️ Trắc Nghiệm (90 Câu)',             color: 'teal' },
+              { id: 'leaderboard', label: '🏆 Bảng Xếp Hạng',                    color: 'teal' },
+              { id: 'settings',    label: `⚙️ Thành Tích (${isAdmin ? `${BADGES_LIST.length + ADMIN_BADGES_LIST.length}/${BADGES_LIST.length + ADMIN_BADGES_LIST.length}` : `${currentUser?.badges?.length || 0}/${BADGES_LIST.length}`})`, color: 'indigo' },
+              { id: 'ai-chat',     label: '🤖 BIOSEA AI',                        color: 'teal' },
+              ...(isAdmin ? [{ id: 'admin', label: '🔐 Admin', color: 'amber' }] : []),
+            ].map((it) => {
+              const active = activeTab === it.id;
+              const activeCls = it.color === 'amber'
+                ? 'bg-amber-500 text-slate-950'
+                : it.color === 'indigo'
+                ? 'bg-indigo-500 text-white'
+                : 'bg-teal-500 text-slate-950';
+              return (
+                <button
+                  key={it.id}
+                  onClick={() => { setActiveTab(it.id); setMenuOpen(false); }}
+                  className={`text-left px-4 py-3 rounded-xl text-sm font-bold transition-all ${active ? `${activeCls} shadow` : 'text-slate-300 hover:bg-slate-800'}`}
+                >
+                  {it.label}
+                </button>
+              );
+            })}
+            <p className="mt-auto pt-4 text-[10px] text-slate-500 italic border-t border-slate-800">
+              🌊 BIONOVA LEGACY • Khám phá đại dương sinh học
+            </p>
+          </aside>
+        </>
+      )}
 
       {/* MAIN LAYOUT */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
