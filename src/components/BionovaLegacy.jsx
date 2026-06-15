@@ -432,6 +432,30 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, currentUser?.role]);
 
+  // 🆘 Load support tickets + realtime
+  const loadAdminTickets = async () => {
+    const { data } = await supabase.from('support_messages').select('*').order('created_at', { ascending: false }).limit(200);
+    if (data) setAdminTickets(data);
+  };
+  const loadMyTickets = async () => {
+    if (!currentUser?.id) return;
+    const { data } = await supabase.from('support_messages').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(50);
+    if (data) setMyTickets(data);
+  };
+  useEffect(() => {
+    if (!currentUser) return;
+    loadMyTickets();
+    if (isAdmin) loadAdminTickets();
+    const ch = supabase.channel('support_rt')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'support_messages' }, () => {
+        loadMyTickets();
+        if (isAdmin) loadAdminTickets();
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?.id, currentUser?.role]);
+
   // Lời chào AI thay đổi theo role
   useEffect(() => {
     if (!currentUser) return;
