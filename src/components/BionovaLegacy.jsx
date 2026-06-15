@@ -885,6 +885,77 @@ export default function App() {
     }
   };
 
+  // 🆘 Bong bóng hỗ trợ: gửi câu hỏi cho AI hỗ trợ kỹ thuật
+  const handleSupportAi = async (e) => {
+    e?.preventDefault?.();
+    const text = supportInput.trim();
+    if (!text || supportLoading) return;
+    const history = [...supportMessages, { role: 'user', text }];
+    setSupportMessages(history);
+    setSupportInput('');
+    setSupportLoading(true);
+    try {
+      const system = `Bạn là BIOSEA SUPPORT — trợ lý hỗ trợ kỹ thuật của BIONOVA LEGACY, đang giúp người dùng "${currentUser?.real_name || currentUser?.username}" xử lý các lỗi/khó khăn khi sử dụng app. App có các tính năng: đăng nhập, xem video, làm quiz 90 câu (chỉ random đáp án), bảng xếp hạng, huy hiệu, AI chat, nhạc nền, tài liệu PDF. Trả lời ngắn gọn, từng bước rõ ràng bằng tiếng Việt, có emoji. Nếu vấn đề vượt quyền hạn (ví dụ: khôi phục mật khẩu, xoá tài khoản, lỗi dữ liệu, khiếu nại), hãy hướng dẫn người dùng bấm nút "Nhắn Admin" ở tab bên cạnh để gửi trực tiếp cho quản trị viên.`;
+      const chatMsgs = history.slice(-10).map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.text }));
+      setSupportMessages(prev => [...prev, { role: 'assistant', text: '' }]);
+      await streamAiChat({ system, messages: chatMsgs }, (partial) => {
+        setSupportMessages(prev => {
+          const next = [...prev];
+          next[next.length - 1] = { role: 'assistant', text: partial };
+          return next;
+        });
+      });
+    } catch (err) {
+      setSupportMessages(prev => [...prev, { role: 'assistant', text: '⚠️ Lỗi AI: ' + err.message }]);
+    } finally {
+      setSupportLoading(false);
+    }
+  };
+
+  // 🆘 Gửi tin nhắn trực tiếp cho admin
+  const handleSendToAdmin = async (e) => {
+    e?.preventDefault?.();
+    const text = supportInput.trim();
+    if (!text) return;
+    setSupportLoading(true);
+    const { error } = await supabase.from('support_messages').insert({
+      user_id: currentUser?.id || null,
+      username: currentUser?.username || 'guest',
+      real_name: currentUser?.real_name || null,
+      message: text,
+      status: 'open',
+    });
+    setSupportLoading(false);
+    if (error) {
+      setSupportSentMsg('⚠️ Không gửi được: ' + error.message);
+    } else {
+      setSupportInput('');
+      setSupportSentMsg('✅ Đã gửi cho Admin. Bạn sẽ nhận được phản hồi tại đây.');
+      loadMyTickets();
+      setTimeout(() => setSupportSentMsg(''), 4000);
+    }
+  };
+
+  // 🛡️ Admin trả lời ticket
+  const handleAdminReply = async (ticket) => {
+    const reply = (adminReplyDraft[ticket.id] || '').trim();
+    if (!reply) return;
+    const { error } = await supabase.from('support_messages').update({
+      reply, status: 'answered', replied_at: new Date().toISOString(),
+    }).eq('id', ticket.id);
+    if (!error) {
+      setAdminReplyDraft(prev => ({ ...prev, [ticket.id]: '' }));
+      loadAdminTickets();
+    } else {
+      alert('Lỗi: ' + error.message);
+    }
+  };
+  const handleDeleteTicket = async (id) => {
+    if (!confirm('Xoá tin nhắn này?')) return;
+    await supabase.from('support_messages').delete().eq('id', id);
+    loadAdminTickets();
+  };
+
   const progressPercent = useMemo(() => Math.round(((quizIndex + 1) / quizOrder.length) * 100), [quizIndex, quizOrder.length]);
   const sortedLeaderboard = useMemo(() => [...leaderboard].sort((a, b) => b.score - a.score), [leaderboard]);
   const allVideos = useMemo(() => {
