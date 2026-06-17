@@ -708,8 +708,12 @@ export default function App() {
     if (finalScore >= 90) updatedBadges.push('👑');
     if (currentUser.badges.includes('📡')) updatedBadges.push('📡'); // Bảo lưu nhạc nền nếu có
 
-    const newTitle = GET_TITLE_BY_SCORE(finalScore);
+    const autoTitle = GET_TITLE_BY_SCORE(finalScore);
     const maxScore = Math.max(currentUser.score, finalScore);
+    // Nếu user đã tự chọn danh hiệu thì giữ nguyên, không auto-overwrite
+    const titleChosen = typeof window !== 'undefined' && localStorage.getItem('biotech_title_chosen_' + currentUser.id) === '1';
+    const chosenStillValid = titleChosen && (isAdmin || (TITLES_LIST.find(t => t.name === currentUser.title)?.min ?? 0) <= maxScore);
+    const newTitle = chosenStillValid ? currentUser.title : autoTitle;
 
     const updatedUser = { ...currentUser, score: maxScore, title: newTitle, badges: updatedBadges };
     setCurrentUser(updatedUser);
