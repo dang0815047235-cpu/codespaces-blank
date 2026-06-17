@@ -1174,6 +1174,7 @@ export default function App() {
                   const unlockedBadges = isAdmin ? (BADGES_LIST.length + ADMIN_BADGES_LIST.length) : (currentUser?.badges?.length || 0);
                   return `⚙️ Thành Tích (${unlockedBadges + unlockedTitles}/${totalAll})`;
                 })(), color: 'indigo' },
+              { id: 'config',      label: '🛠️ Cài Đặt',                          color: 'teal' },
               { id: 'ai-chat',     label: '🤖 BIOSEA AI',                        color: 'teal' },
               ...(isAdmin ? [{ id: 'admin', label: '🔐 Admin', color: 'amber' }] : []),
             ].map((it) => {
