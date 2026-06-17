@@ -1571,13 +1571,20 @@ export default function App() {
                     <h3 className="text-base font-bold text-slate-100 border-b border-slate-800 pb-3 mb-4">
                       🎖️ Kho Danh Hiệu Bionova ({TITLES_LIST.length}) {isAdmin && <span className="text-amber-400">— Admin đã mở khoá toàn bộ</span>}
                     </h3>
+                    <p className="text-[11px] text-slate-400 mb-3">👉 Bấm vào một danh hiệu đã mở khoá để gắn hiển thị dưới tên & trên Bảng Xếp Hạng.</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                       {TITLES_LIST.map((t) => {
                         const userScore = currentUser?.score || 0;
                         const unlocked = isAdmin || userScore >= t.min;
                         const current = (currentUser?.title === t.name);
                         return (
-                          <div key={t.name} className={`p-3 rounded-xl border flex items-center gap-3 bg-slate-950 transition-all ${current ? 'border-amber-400 bg-amber-500/[0.06]' : unlocked ? 'border-teal-500/40' : 'border-slate-900 opacity-40'}`}>
+                          <button
+                            type="button"
+                            key={t.name}
+                            disabled={!unlocked || current}
+                            onClick={() => handleSelectTitle(t.name)}
+                            className={`text-left p-3 rounded-xl border flex items-center gap-3 bg-slate-950 transition-all ${current ? 'border-amber-400 bg-amber-500/[0.06] cursor-default' : unlocked ? 'border-teal-500/40 hover:border-teal-400 hover:bg-teal-500/[0.06] cursor-pointer' : 'border-slate-900 opacity-40 cursor-not-allowed'}`}
+                          >
                             <div className="text-[10px] font-extrabold w-10 text-center text-slate-500">{t.min}+</div>
                             <div className="flex-1">
                               <p className="font-bold text-slate-200">{t.name}</p>
@@ -1586,11 +1593,11 @@ export default function App() {
                             {current ? (
                               <span className="text-[9px] bg-amber-500 text-slate-950 font-extrabold px-1.5 py-0.5 rounded uppercase">Hiện tại</span>
                             ) : unlocked ? (
-                              <span className="text-[9px] bg-emerald-500/20 text-emerald-400 font-extrabold px-1.5 py-0.5 rounded uppercase">{isAdmin ? 'Admin' : 'Đã mở'}</span>
+                              <span className="text-[9px] bg-emerald-500/20 text-emerald-400 font-extrabold px-1.5 py-0.5 rounded uppercase">Chọn</span>
                             ) : (
                               <span className="text-[9px] bg-slate-800 text-slate-500 font-medium px-1.5 py-0.5 rounded">Khóa</span>
                             )}
-                          </div>
+                          </button>
                         );
                       })}
                     </div>
