@@ -1471,75 +1471,6 @@ export default function App() {
               {/* TAB 5: HỒ SƠ & TOÀN BỘ 30 DANH HIỆU/HUY HIỆU ĐỒ SỘ */}
               {activeTab === 'settings' && (
                 <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
-                      <h3 className="text-sm font-bold text-slate-200 border-b border-slate-800 pb-2">👤 Quản Lý Định Danh</h3>
-                      <input type="text" defaultValue={currentUser?.real_name} onBlur={(e) => handleUpdateNickname(e.target.value)} placeholder="Sửa tên hiển thị..." className="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-xl text-xs font-bold text-slate-100 focus:outline-none focus:border-teal-400" />
-                      <p className="text-[10px] text-slate-500">Username: @{currentUser?.username} (không đổi được)</p>
-                      <button onClick={handleResetData} className="w-full text-left p-2.5 rounded-xl text-xs bg-rose-500/10 border border-rose-500/20 text-rose-400 font-bold hover:bg-rose-500/20 transition-all">🔄 Reset toàn bộ điểm số & huy hiệu</button>
-                    </div>
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 md:col-span-2">
-                      <h3 className="text-sm font-bold text-slate-200 border-b border-slate-800 pb-2">🔐 Đổi Mật Khẩu</h3>
-                      <form onSubmit={handleChangePassword} className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                        <input
-                          type="password"
-                          value={pwdOld}
-                          onChange={(e) => setPwdOld(e.target.value)}
-                          placeholder="Mật khẩu cũ"
-                          autoComplete="current-password"
-                          className="bg-slate-950 border border-slate-800 px-3 py-2 rounded-xl text-xs font-bold text-slate-100 focus:outline-none focus:border-teal-400"
-                        />
-                        <input
-                          type="password"
-                          value={pwdNew}
-                          onChange={(e) => setPwdNew(e.target.value)}
-                          placeholder="Mật khẩu mới (6-72 ký tự)"
-                          autoComplete="new-password"
-                          minLength={6}
-                          maxLength={72}
-                          className="bg-slate-950 border border-slate-800 px-3 py-2 rounded-xl text-xs font-bold text-slate-100 focus:outline-none focus:border-teal-400"
-                        />
-                        <input
-                          type="password"
-                          value={pwdNew2}
-                          onChange={(e) => setPwdNew2(e.target.value)}
-                          placeholder="Nhập lại mật khẩu mới"
-                          autoComplete="new-password"
-                          minLength={6}
-                          maxLength={72}
-                          className="bg-slate-950 border border-slate-800 px-3 py-2 rounded-xl text-xs font-bold text-slate-100 focus:outline-none focus:border-teal-400"
-                        />
-                        <button
-                          type="submit"
-                          disabled={pwdLoading}
-                          className="md:col-span-3 w-full p-2.5 rounded-xl text-xs font-bold bg-teal-500 hover:bg-teal-400 text-slate-950 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {pwdLoading ? 'Đang cập nhật...' : '🔒 Cập nhật mật khẩu'}
-                        </button>
-                      </form>
-                      {pwdMsg && (
-                        <p className={`text-[11px] font-bold ${pwdMsg.type === 'ok' ? 'text-emerald-400' : 'text-rose-400'}`}>
-                          {pwdMsg.text}
-                        </p>
-                      )}
-                      <p className="text-[10px] text-slate-500">
-                        Mật khẩu được mã hoá bằng bcrypt phía server. Mật khẩu cũ phải đúng thì mới đổi được.
-                      </p>
-                    </div>
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
-                      <h3 className="text-sm font-bold text-slate-200 border-b border-slate-800 pb-2">🎛️ Tùy Chỉnh Giao Diện</h3>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-slate-400 font-bold uppercase">Âm lượng guitar rải không gian</label>
-                        <input type="range" min="0" max="100" value={bgVolume} onChange={(e) => setBgVolume(Number(e.target.value))} className="w-full accent-teal-400 bg-slate-950 rounded-lg h-1.5" />
-                      </div>
-                      <div className="grid grid-cols-3 gap-2 text-[11px] font-bold pt-1">
-                          <button onClick={() => setThemeStyle('slate')} className={`p-2 rounded-lg border ${themeStyle === 'slate' ? 'bg-teal-500 text-slate-950 border-teal-400' : 'bg-slate-950 border-slate-800 text-slate-400'}`}>Mặc định</button>
-                          <button onClick={() => setThemeStyle('ocean')} className={`p-2 rounded-lg border ${themeStyle === 'ocean' ? 'bg-blue-700 text-blue-100 border-blue-500' : 'bg-slate-950 border-slate-800 text-slate-400'}`}>Đại dương</button>
-                          <button onClick={() => setThemeStyle('emerald')} className={`p-2 rounded-lg border ${themeStyle === 'emerald' ? 'bg-emerald-500 text-slate-950 border-emerald-400' : 'bg-slate-950 border-slate-800 text-slate-400'}`}>Lục bảo</button>
-                      </div>
-                    </div>
-                  </div>
-
                   {/* DANH SÁCH 15 HUY HIỆU */}
                   <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
                     <h3 className="text-base font-bold text-slate-100 border-b border-slate-800 pb-3 mb-4">
@@ -1548,11 +1479,10 @@ export default function App() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                       {[...BADGES_LIST, ...(isAdmin ? ADMIN_BADGES_LIST : [])].map((badge) => {
                         const isAdminBadge = ADMIN_BADGES_LIST.some(b => b.icon === badge.icon);
-                        // Admin chỉ tự động mở các huy hiệu đặc quyền admin.
-                        // Huy hiệu thường vẫn phải đạt điểm như user bình thường.
-                        const hasBadge = isAdminBadge
-                          ? isAdmin
-                          : !!currentUser?.badges?.includes(badge.icon);
+                        // Admin tự động mở khoá toàn bộ huy hiệu (cả thường lẫn đặc quyền).
+                        const hasBadge = isAdmin
+                          ? true
+                          : (isAdminBadge ? false : !!currentUser?.badges?.includes(badge.icon));
                         return (
                           <div key={badge.id} className={`p-3 rounded-xl border flex items-center gap-3 bg-slate-950 transition-all ${isAdminBadge ? 'border-amber-500/50 bg-amber-500/[0.04]' : hasBadge ? 'border-teal-500/40 bg-teal-500/[0.02]' : 'border-slate-900 opacity-30'}`}>
                             <div className="text-2xl">{badge.icon}</div>
