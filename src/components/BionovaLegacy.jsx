@@ -741,6 +741,25 @@ export default function App() {
     handleAiExplainQuiz(option, correct);
   };
 
+  // Cho phép người dùng (và admin) chọn danh hiệu hiển thị
+  const handleSelectTitle = async (titleName) => {
+    if (!currentUser) return;
+    const t = TITLES_LIST.find(x => x.name === titleName);
+    if (!t) return;
+    if (!isAdmin && (currentUser.score || 0) < t.min) {
+      alert(`🔒 Bạn cần đạt ${t.min}+ điểm để mở khoá danh hiệu này.`);
+      return;
+    }
+    const updatedUser = { ...currentUser, title: titleName };
+    setCurrentUser(updatedUser);
+    localStorage.setItem('biotech_current_user', JSON.stringify(updatedUser));
+    localStorage.setItem('biotech_title_chosen_' + currentUser.id, '1');
+    await supabase.from('accounts')
+      .update({ title: titleName, updated_at: new Date().toISOString() })
+      .eq('id', currentUser.id);
+    loadLeaderboard();
+  };
+
   // =================== ADMIN FUNCTIONS ===================
   const isAdmin = currentUser?.role === 'admin';
 
