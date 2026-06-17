@@ -1145,7 +1145,12 @@ export default function App() {
               { id: 'videos',      label: `🎥 Thư Viện Video (${allVideos.length})`, color: 'teal' },
               { id: 'quiz',        label: '✍️ Trắc Nghiệm (90 Câu)',             color: 'teal' },
               { id: 'leaderboard', label: '🏆 Bảng Xếp Hạng',                    color: 'teal' },
-              { id: 'settings',    label: `⚙️ Thành Tích (${isAdmin ? `${BADGES_LIST.length + ADMIN_BADGES_LIST.length}/${BADGES_LIST.length + ADMIN_BADGES_LIST.length}` : `${currentUser?.badges?.length || 0}/${BADGES_LIST.length}`})`, color: 'indigo' },
+              { id: 'settings',    label: (() => {
+                  const totalAll = BADGES_LIST.length + TITLES_LIST.length + (isAdmin ? ADMIN_BADGES_LIST.length : 0);
+                  const unlockedTitles = isAdmin ? TITLES_LIST.length : TITLES_LIST.filter(t => (currentUser?.score || 0) >= t.min).length;
+                  const unlockedBadges = isAdmin ? (BADGES_LIST.length + ADMIN_BADGES_LIST.length) : (currentUser?.badges?.length || 0);
+                  return `⚙️ Thành Tích (${unlockedBadges + unlockedTitles}/${totalAll})`;
+                })(), color: 'indigo' },
               { id: 'ai-chat',     label: '🤖 BIOSEA AI',                        color: 'teal' },
               ...(isAdmin ? [{ id: 'admin', label: '🔐 Admin', color: 'amber' }] : []),
             ].map((it) => {
