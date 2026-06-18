@@ -1588,7 +1588,7 @@ export default function App() {
               )}
 
               {activeTab === 'config' && (
-                <div className="space-y-6">
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
                       <h3 className="text-sm font-bold text-slate-200 border-b border-slate-800 pb-2">👤 Quản Lý Định Danh</h3>
@@ -1622,6 +1622,13 @@ export default function App() {
                         <button onClick={() => setThemeStyle('ocean')} className={`p-2 rounded-lg border ${themeStyle === 'ocean' ? 'bg-blue-700 text-blue-100 border-blue-500' : 'bg-slate-950 border-slate-800 text-slate-400'}`}>Đại dương</button>
                         <button onClick={() => setThemeStyle('emerald')} className={`p-2 rounded-lg border ${themeStyle === 'emerald' ? 'bg-emerald-500 text-slate-950 border-emerald-400' : 'bg-slate-950 border-slate-800 text-slate-400'}`}>Lục bảo</button>
                       </div>
+                    </div>
+                    <div className="bg-slate-900 border border-rose-500/30 rounded-2xl p-5 space-y-3 md:col-span-2">
+                      <h3 className="text-sm font-bold text-rose-300 border-b border-rose-500/20 pb-2">🚪 Phiên Đăng Nhập</h3>
+                      <p className="text-[11px] text-slate-400">Đăng xuất khỏi tài khoản <b className="text-teal-400">@{currentUser?.username}</b> trên thiết bị này. Tiến trình điểm số vẫn được lưu trên máy chủ.</p>
+                      <button onClick={handleLogout} className="w-full p-2.5 rounded-xl text-xs font-bold bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-slate-950 border border-rose-500/30 transition-all">
+                        🚪 Đăng xuất khỏi BIONOVA LEGACY
+                      </button>
                     </div>
                   </div>
                 </div>
