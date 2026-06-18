@@ -1192,10 +1192,10 @@ export default function App() {
       {menuOpen && (
         <>
           <div
-            className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 animate-in fade-in duration-200"
             onClick={() => setMenuOpen(false)}
           />
-          <aside className="fixed top-0 left-0 h-full w-72 bg-slate-900 border-r border-slate-800 z-50 p-4 shadow-2xl flex flex-col gap-2 overflow-y-auto">
+          <aside className="fixed top-0 left-0 h-full w-72 bg-slate-900 border-r border-slate-800 z-50 p-4 shadow-2xl flex flex-col gap-2 overflow-y-auto animate-in slide-in-from-left duration-300">
             <div className="flex items-center justify-between mb-2 pb-3 border-b border-slate-800">
               <h2 className="text-sm font-bold text-teal-400">📂 Khu Vực Bionova</h2>
               <button onClick={() => setMenuOpen(false)} className="text-slate-400 hover:text-rose-400 text-lg leading-none">✕</button>
