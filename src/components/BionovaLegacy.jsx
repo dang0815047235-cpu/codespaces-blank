@@ -782,6 +782,22 @@ export default function App() {
     loadLeaderboard();
   };
 
+  // Cho phép chọn HUY HIỆU đã mở khoá làm danh hiệu hiển thị dưới tên
+  const handleSelectBadgeAsTitle = async (badge) => {
+    if (!currentUser) return;
+    const isAdminBadge = ADMIN_BADGES_LIST.some(b => b.icon === badge.icon);
+    const owned = isAdmin || (!isAdminBadge && currentUser?.badges?.includes(badge.icon));
+    if (!owned) { alert('🔒 Bạn chưa mở khoá huy hiệu này.'); return; }
+    const updatedUser = { ...currentUser, title: badge.name };
+    setCurrentUser(updatedUser);
+    localStorage.setItem('biotech_current_user', JSON.stringify(updatedUser));
+    localStorage.setItem('biotech_title_chosen_' + currentUser.id, '1');
+    await supabase.from('accounts')
+      .update({ title: badge.name, updated_at: new Date().toISOString() })
+      .eq('id', currentUser.id);
+    loadLeaderboard();
+  };
+
   // =================== ADMIN FUNCTIONS ===================
   const isAdmin = currentUser?.role === 'admin';
 
