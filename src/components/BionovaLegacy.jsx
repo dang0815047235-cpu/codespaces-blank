@@ -1513,6 +1513,7 @@ export default function App() {
                     <h3 className="text-base font-bold text-slate-100 border-b border-slate-800 pb-3 mb-4">
                       🏅 Đại Kho Tàng Huy Hiệu Thành Tích {isAdmin && <span className="text-amber-400">+ Đặc Quyền Admin</span>}
                     </h3>
+                    <p className="text-[11px] text-slate-400 mb-3">👉 Bấm vào một huy hiệu đã mở khoá để gắn làm danh hiệu hiển thị dưới tên & trên Bảng Xếp Hạng.</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                       {[...BADGES_LIST, ...(isAdmin ? ADMIN_BADGES_LIST : [])].map((badge) => {
                         const isAdminBadge = ADMIN_BADGES_LIST.some(b => b.icon === badge.icon);
@@ -1520,15 +1521,28 @@ export default function App() {
                         const hasBadge = isAdmin
                           ? true
                           : (isAdminBadge ? false : !!currentUser?.badges?.includes(badge.icon));
+                        const currentTitle = currentUser?.title === badge.name;
                         return (
-                          <div key={badge.id} className={`p-3 rounded-xl border flex items-center gap-3 bg-slate-950 transition-all ${isAdminBadge ? 'border-amber-500/50 bg-amber-500/[0.04]' : hasBadge ? 'border-teal-500/40 bg-teal-500/[0.02]' : 'border-slate-900 opacity-30'}`}>
+                          <button
+                            type="button"
+                            key={badge.id}
+                            disabled={!hasBadge || currentTitle}
+                            onClick={() => handleSelectBadgeAsTitle(badge)}
+                            className={`text-left w-full p-3 rounded-xl border flex items-center gap-3 bg-slate-950 transition-all duration-300 ${currentTitle ? 'border-amber-400 bg-amber-500/[0.08] cursor-default' : hasBadge ? 'border-teal-500/40 hover:border-teal-400 hover:bg-teal-500/[0.06] hover:scale-[1.02] cursor-pointer' : 'border-slate-900 opacity-30 cursor-not-allowed'}`}
+                          >
                             <div className="text-2xl">{badge.icon}</div>
                             <div>
                               <p className="font-bold text-slate-200">{badge.name}</p>
                               <p className="text-[11px] text-slate-400 mt-0.5">{badge.desc}</p>
                             </div>
-                            {isAdminBadge ? <span className="ml-auto text-[9px] bg-amber-500/20 text-amber-400 font-extrabold px-1.5 py-0.5 rounded uppercase">Admin</span> : hasBadge ? <span className="ml-auto text-[9px] bg-emerald-500/20 text-emerald-400 font-extrabold px-1.5 py-0.5 rounded uppercase">Đã mở</span> : <span className="ml-auto text-[9px] bg-slate-800 text-slate-500 font-medium px-1.5 py-0.5 rounded">Khóa</span>}
-                          </div>
+                            {currentTitle ? (
+                              <span className="ml-auto text-[9px] bg-amber-500 text-slate-950 font-extrabold px-1.5 py-0.5 rounded uppercase">Hiện tại</span>
+                            ) : hasBadge ? (
+                              <span className="ml-auto text-[9px] bg-emerald-500/20 text-emerald-400 font-extrabold px-1.5 py-0.5 rounded uppercase">Chọn</span>
+                            ) : (
+                              <span className="ml-auto text-[9px] bg-slate-800 text-slate-500 font-medium px-1.5 py-0.5 rounded">Khóa</span>
+                            )}
+                          </button>
                         );
                       })}
                     </div>
