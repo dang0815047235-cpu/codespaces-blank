@@ -1242,7 +1242,7 @@ export default function App() {
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* KHU VỰC CHÍNH ĐƯỢC CHỌN TỪ CÁC TAB */}
-        <div className="lg:col-span-2 space-y-6">
+        <div key={activeTab} className="lg:col-span-2 space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-300">
 
             <>
               {/* TAB 1: KHÁM PHÁ KIẾN THỨC NÂNG CẤP CHỮ TO & XEM CHI TIẾT */}
