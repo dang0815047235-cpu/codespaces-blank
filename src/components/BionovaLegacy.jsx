@@ -322,7 +322,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('concepts');
   const [menuOpen, setMenuOpen] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [bgVolume, setBgVolume] = useState(25); 
+  const [bgVolume, setBgVolume] = useState(60);
   const audioElRef = useRef(null);
 
   const [themeStyle, setThemeStyle] = useState('slate'); 
