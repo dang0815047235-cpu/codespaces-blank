@@ -1871,7 +1871,7 @@ export default function App() {
         )}
       </button>
       {supportOpen && (
-        <div className="fixed bottom-24 right-5 z-[95] w-[92vw] max-w-sm h-[70vh] max-h-[560px] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed bottom-24 right-5 z-[95] w-[92vw] max-w-sm h-[70vh] max-h-[560px] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-scale-in animate-fade-in">
           <div className="px-3 py-2 border-b border-slate-800 bg-slate-950 flex items-center gap-1">
             <button onClick={() => setSupportMode('ai')} className={`flex-1 px-2 py-1.5 rounded-lg text-[11px] font-bold ${supportMode==='ai' ? 'bg-teal-500 text-slate-950' : 'text-slate-400'}`}>🤖 AI Hỗ Trợ</button>
             <button onClick={() => setSupportMode('admin')} className={`flex-1 px-2 py-1.5 rounded-lg text-[11px] font-bold ${supportMode==='admin' ? 'bg-amber-500 text-slate-950' : 'text-slate-400'}`}>
