@@ -563,6 +563,27 @@ export default function App() {
     if (audioElRef.current) audioElRef.current.volume = bgVolume / 100;
   }, [bgVolume]);
 
+  // 🛑 Dừng nhạc khi rời/ẩn trang hoặc unmount để không phát "lén" nền
+  useEffect(() => {
+    const stopAudio = () => {
+      const el = audioElRef.current;
+      if (el && !el.paused) {
+        try { el.pause(); } catch (_) {}
+      }
+      setIsPlayingAudio(false);
+    };
+    const onVis = () => { if (document.visibilityState === 'hidden') stopAudio(); };
+    window.addEventListener('pagehide', stopAudio);
+    window.addEventListener('beforeunload', stopAudio);
+    document.addEventListener('visibilitychange', onVis);
+    return () => {
+      window.removeEventListener('pagehide', stopAudio);
+      window.removeEventListener('beforeunload', stopAudio);
+      document.removeEventListener('visibilitychange', onVis);
+      stopAudio();
+    };
+  }, []);
+
   // Đăng ký / Đăng nhập (đồng bộ Supabase)
   const handleAuth = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
@@ -638,6 +659,7 @@ export default function App() {
   };
 
   const handleLogout = () => {
+    if (!window.confirm('Bạn có chắc chắn muốn đăng xuất khỏi BIONOVA LEGACY không?')) return;
     localStorage.removeItem('biotech_current_user');
     setCurrentUser(null);
     setIsLoggedIn(false);
