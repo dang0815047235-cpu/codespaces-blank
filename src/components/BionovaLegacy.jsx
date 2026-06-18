@@ -1269,10 +1269,10 @@ export default function App() {
                         <span className="text-lg text-slate-500">{expandedConcept === 'concept1' ? '▼' : '▶'}</span>
                       </button>
                       {expandedConcept === 'concept1' && (
-                        <div className="p-5 border-t border-slate-800 bg-slate-950 text-slate-300 space-y-3 text-sm leading-relaxed animate-fadeIn">
-                          <p className="font-bold text-slate-200 text-base">Chu kì tế bào là khoảng thời gian từ khi tế bào được sinh ra đến lần phân chia tiếp theo.</p>
-                          <p>Bao gồm 2 giai đoạn cốt lõi: Kì trung gian (Pha G1 - Tế bào lớn lên, Pha S - Nhân đôi ADN, Pha G2 - Tổng hợp protein Tubulin) và Pha phân bào M.</p>
-                          <p className="text-amber-400 font-medium">Hệ thống được điều khiển chặt chẽ bởi 3 Checkpoint chính (G1, G2/M, Thoi phân bào M). Nếu tế bào lỗi vượt qua điểm kiểm soát sẽ biến đổi thành tế bào ung thư tạo khối u di căn.</p>
+                        <div className="p-5 border-t border-slate-800 bg-slate-950 text-slate-300 space-y-3 text-sm leading-relaxed animate-fade-in">
+                          <p className="font-bold text-slate-200 text-base animate-fade-in" style={{animationDelay:'50ms'}}>Chu kì tế bào là khoảng thời gian từ khi tế bào được sinh ra đến lần phân chia tiếp theo.</p>
+                          <p className="animate-fade-in" style={{animationDelay:'100ms'}}>Bao gồm 2 giai đoạn cốt lõi: Kì trung gian (Pha G1 - Tế bào lớn lên, Pha S - Nhân đôi ADN, Pha G2 - Tổng hợp protein Tubulin) và Pha phân bào M.</p>
+                          <p className="text-amber-400 font-medium animate-fade-in" style={{animationDelay:'150ms'}}>Hệ thống được điều khiển chặt chẽ bởi 3 Checkpoint chính (G1, G2/M, Thoi phân bào M). Nếu tế bào lỗi vượt qua điểm kiểm soát sẽ biến đổi thành tế bào ung thư tạo khối u di căn.</p>
                         </div>
                       )}
                     </div>
@@ -1287,13 +1287,13 @@ export default function App() {
                         <span className="text-lg text-slate-500">{expandedConcept === 'concept2' ? '▼' : '▶'}</span>
                       </button>
                       {expandedConcept === 'concept2' && (
-                        <div className="p-5 border-t border-slate-800 bg-slate-950 text-slate-300 space-y-3 text-sm leading-relaxed animate-fadeIn">
-                          <p className="font-bold text-slate-200 text-base">Xảy ra ở tế bào sinh dưỡng (xôma) và tế bào sinh dục sơ khai.</p>
+                        <div className="p-5 border-t border-slate-800 bg-slate-950 text-slate-300 space-y-3 text-sm leading-relaxed animate-fade-in">
+                          <p className="font-bold text-slate-200 text-base animate-fade-in" style={{animationDelay:'50ms'}}>Xảy ra ở tế bào sinh dưỡng (xôma) và tế bào sinh dục sơ khai.</p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
-                            <div className="bg-slate-900 p-2.5 rounded border border-slate-800"><b className="text-slate-100 block mb-0.5">Kì đầu:</b> NST kép bắt đầu co xoắn, màng nhân biến mất hoàn toàn, thoi vô sắc xuất hiện.</div>
-                            <div className="bg-slate-900 p-2.5 rounded border border-slate-800"><b className="text-slate-100 block mb-0.5">Kì giữa:</b> NST co xoắn cực đại, tập trung xếp thành 1 hàng thẳng tắp ở mặt phẳng xích đạo.</div>
-                            <div className="bg-slate-900 p-2.5 rounded border border-slate-800"><b className="text-slate-100 block mb-0.5">Kì sau:</b> Tâm động tách đôi, kéo 2 chromatid chị em phân li thành NST đơn di chuyển về 2 cực.</div>
-                            <div className="bg-slate-900 p-2.5 rounded border border-slate-800"><b className="text-slate-100 block mb-0.5">Kì cuối:</b> Màng nhân tái xuất hiện, NST dãn xoắn, phân chia tế bào chất hình thành 2 tế bào con 2n giống hệt mẹ.</div>
+                            <div className="bg-slate-900 p-2.5 rounded border border-slate-800 animate-fade-in hover-scale" style={{animationDelay:'100ms'}}><b className="text-slate-100 block mb-0.5">Kì đầu:</b> NST kép bắt đầu co xoắn, màng nhân biến mất hoàn toàn, thoi vô sắc xuất hiện.</div>
+                            <div className="bg-slate-900 p-2.5 rounded border border-slate-800 animate-fade-in hover-scale" style={{animationDelay:'150ms'}}><b className="text-slate-100 block mb-0.5">Kì giữa:</b> NST co xoắn cực đại, tập trung xếp thành 1 hàng thẳng tắp ở mặt phẳng xích đạo.</div>
+                            <div className="bg-slate-900 p-2.5 rounded border border-slate-800 animate-fade-in hover-scale" style={{animationDelay:'200ms'}}><b className="text-slate-100 block mb-0.5">Kì sau:</b> Tâm động tách đôi, kéo 2 chromatid chị em phân li thành NST đơn di chuyển về 2 cực.</div>
+                            <div className="bg-slate-900 p-2.5 rounded border border-slate-800 animate-fade-in hover-scale" style={{animationDelay:'250ms'}}><b className="text-slate-100 block mb-0.5">Kì cuối:</b> Màng nhân tái xuất hiện, NST dãn xoắn, phân chia tế bào chất hình thành 2 tế bào con 2n giống hệt mẹ.</div>
                           </div>
                         </div>
                       )}
@@ -1309,10 +1309,10 @@ export default function App() {
                         <span className="text-lg text-slate-500">{expandedConcept === 'concept3' ? '▼' : '▶'}</span>
                       </button>
                       {expandedConcept === 'concept3' && (
-                        <div className="p-5 border-t border-slate-800 bg-slate-950 text-slate-300 space-y-3 text-sm leading-relaxed animate-fadeIn">
-                          <p className="font-bold text-slate-200 text-base">Xảy ra tại tế bào sinh dục chín gồm 2 lần phân chia liên tiếp nhưng chỉ nhân đôi ADN duy nhất 1 lần ban đầu.</p>
-                          <p><b className="text-amber-400">Kì đầu I:</b> Diễn ra hiện tượng tiếp hợp và trao đổi chéo (Crossing-over) giữa các chromatid khác nguồn gốc thuộc cặp tương đồng, tạo biến dị tổ hợp phong phú.</p>
-                          <p><b className="text-amber-400">Kì giữa I:</b> NST kép tập trung thành 2 hàng song song trên mặt phẳng xích đạo. Kết thúc giảm phân tạo ra 4 giao tử mang bộ NST đơn bội n giảm đi một nửa.</p>
+                        <div className="p-5 border-t border-slate-800 bg-slate-950 text-slate-300 space-y-3 text-sm leading-relaxed animate-fade-in">
+                          <p className="font-bold text-slate-200 text-base animate-fade-in" style={{animationDelay:'50ms'}}>Xảy ra tại tế bào sinh dục chín gồm 2 lần phân chia liên tiếp nhưng chỉ nhân đôi ADN duy nhất 1 lần ban đầu.</p>
+                          <p className="animate-fade-in" style={{animationDelay:'100ms'}}><b className="text-amber-400">Kì đầu I:</b> Diễn ra hiện tượng tiếp hợp và trao đổi chéo (Crossing-over) giữa các chromatid khác nguồn gốc thuộc cặp tương đồng, tạo biến dị tổ hợp phong phú.</p>
+                          <p className="animate-fade-in" style={{animationDelay:'150ms'}}><b className="text-amber-400">Kì giữa I:</b> NST kép tập trung thành 2 hàng song song trên mặt phẳng xích đạo. Kết thúc giảm phân tạo ra 4 giao tử mang bộ NST đơn bội n giảm đi một nửa.</p>
                         </div>
                       )}
                     </div>
