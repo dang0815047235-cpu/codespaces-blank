@@ -1922,14 +1922,14 @@ export default function App() {
                   📨 Gửi trực tiếp cho Quản trị viên. Dùng khi AI không xử lý được (khôi phục mật khẩu, lỗi dữ liệu, khiếu nại điểm…).
                 </div>
                 {myTickets.length === 0 && <div className="text-slate-500 italic p-2">Bạn chưa gửi tin nhắn nào cho Admin.</div>}
-                {myTickets.map(t => (
-                  <div key={t.id} className="space-y-1">
+                {myTickets.map((t, idx) => (
+                  <div key={t.id} className="space-y-1 animate-fade-in" style={{animationDelay:`${Math.min(idx*100,500)}ms`}}>
                     <div className="flex justify-end">
-                      <div className="max-w-[88%] rounded-xl p-2.5 bg-amber-500 text-slate-950 font-bold whitespace-pre-wrap">{t.message}</div>
+                      <div className="max-w-[88%] rounded-xl p-2.5 bg-amber-500 text-slate-950 font-bold whitespace-pre-wrap animate-fade-in">{t.message}</div>
                     </div>
                     <div className="text-[9px] text-slate-500 text-right">{new Date(t.created_at).toLocaleString('vi-VN')} · {t.status === 'open' ? '⏳ Chờ Admin' : '✅ Đã trả lời'}</div>
                     {t.reply && (
-                      <div className="flex justify-start">
+                      <div className="flex justify-start animate-fade-in" style={{animationDelay:'120ms'}}>
                         <div className="max-w-[88%] rounded-xl p-2.5 bg-slate-950 border border-emerald-500/40 text-emerald-200 whitespace-pre-wrap">
                           <div className="text-[9px] font-bold text-emerald-400 mb-1">🛡️ ADMIN trả lời:</div>
                           {t.reply}
