@@ -1890,7 +1890,7 @@ export default function App() {
                   </div>
                 )}
                 {supportMessages.map((m, i) => (
-                  <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`} style={{animationDelay:`${Math.min(i*80,400)}ms`}}>
                     <div className={`max-w-[88%] rounded-xl p-2.5 ${m.role === 'user' ? 'bg-teal-500 text-slate-950 font-bold whitespace-pre-wrap' : 'bg-slate-950 border border-slate-800 text-slate-200'}`}>
                       {m.role === 'user' ? m.text : (
                         <div className="prose prose-invert prose-sm max-w-none prose-p:my-1 prose-li:my-0">
