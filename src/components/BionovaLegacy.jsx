@@ -1301,7 +1301,33 @@ export default function App() {
     >
       {/* Audio nền dùng chung cho mọi user */}
       <audio ref={audioElRef} src={appSettings.music_url || undefined} loop preload="metadata" playsInline crossOrigin="anonymous" />
-      
+
+      {/* MODAL: nhắc tài khoản cũ bổ sung email */}
+      {emailPromptOpen && (
+        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-[70] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-slate-900 border border-teal-500/40 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl animate-in zoom-in-95">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-base font-bold text-teal-400">📧 Bổ sung email khôi phục</h3>
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">Tài khoản của bạn chưa có email. Vui lòng thêm email để có thể lấy lại mật khẩu khi quên.</p>
+              </div>
+              <button onClick={() => setEmailPromptOpen(false)} className="text-slate-400 hover:text-slate-200 text-xl leading-none">×</button>
+            </div>
+            <input type="email" value={emailPromptValue} onChange={(e)=>setEmailPromptValue(e.target.value)} placeholder="you@example.com"
+              className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-sm text-slate-100 focus:outline-none placeholder-slate-600" />
+            {emailPromptMsg && (
+              <div className={`text-xs p-2 rounded-lg border ${emailPromptMsg.type==='ok'?'bg-emerald-500/10 border-emerald-500/30 text-emerald-300':'bg-rose-500/10 border-rose-500/30 text-rose-300'}`}>
+                {emailPromptMsg.text}
+              </div>
+            )}
+            <div className="flex gap-2">
+              <button onClick={() => setEmailPromptOpen(false)} className="flex-1 bg-slate-800 border border-slate-700 text-slate-300 font-bold text-xs py-2.5 rounded-xl">Để sau</button>
+              <button onClick={handleSetEmail} className="flex-1 bg-gradient-to-r from-teal-400 to-indigo-500 text-slate-950 font-bold text-xs uppercase py-2.5 rounded-xl">Lưu email</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* HEADER */}
       <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
