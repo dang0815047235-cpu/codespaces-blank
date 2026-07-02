@@ -833,7 +833,7 @@ export default function App() {
   };
 
   const handleOptionSelect = (option) => {
-    if (isAnswered) return;
+    if (isAnswered || aiSolveUsed) return;
     setSelectedAnswer(option);
     setIsAnswered(true);
     const correct = option === quizOrder[quizIndex].answer;
@@ -1007,6 +1007,7 @@ export default function App() {
     if (aiQuizLoading) return;
     const q = quizOrder[quizIndex];
     if (!q) return;
+    setAiSolveUsed(true);
     setAiQuizLoading(true);
     setAiQuizHint('');
     try {
