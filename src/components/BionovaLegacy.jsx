@@ -1208,6 +1208,13 @@ export default function App() {
                   className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-sm text-slate-100 focus:outline-none placeholder-slate-600" />
               </div>
             )}
+            {authMode === 'register' && (
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider pl-1">Email (dùng để lấy lại mật khẩu)</label>
+                <input type="email" value={emailInput} onChange={(e)=>setEmailInput(e.target.value)} maxLength={80} placeholder="you@example.com"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-sm text-slate-100 focus:outline-none placeholder-slate-600" />
+              </div>
+            )}
             <div className="space-y-1">
               <label className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider pl-1">Username</label>
               <input type="text" value={usernameInput} onChange={(e)=>setUsernameInput(e.target.value)} maxLength={20} placeholder="username (không dấu)"
@@ -1223,10 +1230,64 @@ export default function App() {
               className="w-full bg-gradient-to-r from-teal-400 to-indigo-500 hover:from-teal-300 hover:to-indigo-400 text-slate-950 font-black text-xs uppercase tracking-wider py-3 rounded-xl shadow-lg">
               {authMode==='register'?'Tạo Tài Khoản & Vào Hệ Thống':'Đăng Nhập'}
             </button>
+            {authMode === 'login' && (
+              <button type="button" onClick={() => { setForgotOpen(true); setForgotStep(1); setForgotMsg(null); setForgotDevOtp(''); }}
+                className="w-full text-[11px] text-teal-400 hover:text-teal-300 font-semibold underline underline-offset-2">
+                Quên mật khẩu?
+              </button>
+            )}
           </form>
           <div className="text-[10px] text-slate-500 font-medium pt-2">
             Hệ thống đồng bộ điểm và bảng xếp hạng theo thời gian thực.
           </div>
+          {/* MODAL QUÊN MẬT KHẨU */}
+          {forgotOpen && (
+            <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-[60] flex items-center justify-center p-4 animate-in fade-in duration-200">
+              <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl text-left animate-in zoom-in-95">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-bold text-teal-400">🔐 Khôi phục mật khẩu</h3>
+                  <button onClick={() => setForgotOpen(false)} className="text-slate-400 hover:text-slate-200 text-xl leading-none">×</button>
+                </div>
+                {forgotStep === 1 ? (
+                  <>
+                    <p className="text-xs text-slate-400 leading-relaxed">Nhập email đã đăng ký. Chúng tôi sẽ gửi mã OTP 6 chữ số về hộp thư của bạn (hiệu lực 10 phút).</p>
+                    <input type="email" value={forgotEmail} onChange={(e)=>setForgotEmail(e.target.value)} placeholder="you@example.com"
+                      className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-sm text-slate-100 focus:outline-none placeholder-slate-600" />
+                    <button onClick={handleRequestOtp} disabled={forgotLoading}
+                      className="w-full bg-gradient-to-r from-teal-400 to-indigo-500 text-slate-950 font-bold text-xs uppercase py-2.5 rounded-xl disabled:opacity-50">
+                      {forgotLoading ? 'Đang gửi...' : 'Gửi mã OTP'}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xs text-slate-400">Nhập mã OTP đã nhận và mật khẩu mới.</p>
+                    {forgotDevOtp && (
+                      <div className="text-[11px] text-amber-300 bg-amber-500/10 border border-amber-500/30 p-2 rounded-lg">
+                        🧪 <b>Dev mode</b>: Email service chưa cấu hình. Mã OTP của bạn: <code className="font-mono text-base tracking-widest">{forgotDevOtp}</code>
+                      </div>
+                    )}
+                    <input type="text" inputMode="numeric" maxLength={6} value={forgotOtp} onChange={(e)=>setForgotOtp(e.target.value.replace(/\D/g,''))}
+                      placeholder="000000" className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-lg font-mono tracking-[0.5em] text-center text-slate-100 focus:outline-none" />
+                    <input type="password" value={forgotNewPwd} onChange={(e)=>setForgotNewPwd(e.target.value)} placeholder="Mật khẩu mới (≥6 ký tự)"
+                      className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-sm text-slate-100 focus:outline-none placeholder-slate-600" />
+                    <div className="flex gap-2">
+                      <button onClick={() => { setForgotStep(1); setForgotOtp(''); setForgotNewPwd(''); setForgotDevOtp(''); setForgotMsg(null); }}
+                        className="flex-1 bg-slate-800 border border-slate-700 text-slate-300 font-bold text-xs py-2.5 rounded-xl">← Gửi lại OTP</button>
+                      <button onClick={handleVerifyOtp} disabled={forgotLoading}
+                        className="flex-1 bg-gradient-to-r from-teal-400 to-indigo-500 text-slate-950 font-bold text-xs uppercase py-2.5 rounded-xl disabled:opacity-50">
+                        {forgotLoading ? 'Đang xác thực...' : 'Đặt lại mật khẩu'}
+                      </button>
+                    </div>
+                  </>
+                )}
+                {forgotMsg && (
+                  <div className={`text-xs p-2 rounded-lg border ${forgotMsg.type==='ok'?'bg-emerald-500/10 border-emerald-500/30 text-emerald-300':'bg-rose-500/10 border-rose-500/30 text-rose-300'}`}>
+                    {forgotMsg.text}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
