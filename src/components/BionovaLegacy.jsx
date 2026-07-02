@@ -337,6 +337,22 @@ export default function App() {
   const [realNameInput, setRealNameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [authError, setAuthError] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  // Forgot password flow
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const [forgotStep, setForgotStep] = useState(1); // 1: nhập email, 2: nhập OTP + mật khẩu mới
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [forgotNewPwd, setForgotNewPwd] = useState('');
+  const [forgotMsg, setForgotMsg] = useState(null); // {type, text}
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotDevOtp, setForgotDevOtp] = useState(''); // hiển thị nếu chưa gửi email
+  // Nhắc bổ sung email cho tài khoản cũ
+  const [emailPromptOpen, setEmailPromptOpen] = useState(false);
+  const [emailPromptValue, setEmailPromptValue] = useState('');
+  const [emailPromptMsg, setEmailPromptMsg] = useState(null);
+  // Quiz: khoá trả lời khi đã nhờ AI giải
+  const [aiSolveUsed, setAiSolveUsed] = useState(false);
   const [accountsList, setAccountsList] = useState([]);
   const [pwdOld, setPwdOld] = useState('');
   const [pwdNew, setPwdNew] = useState('');
