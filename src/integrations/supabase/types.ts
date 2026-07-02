@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           badges: Json
           created_at: string
+          email: string | null
           id: string
           password_hash: string | null
           real_name: string
@@ -30,6 +31,7 @@ export type Database = {
         Insert: {
           badges?: Json
           created_at?: string
+          email?: string | null
           id?: string
           password_hash?: string | null
           real_name: string
@@ -42,6 +44,7 @@ export type Database = {
         Update: {
           badges?: Json
           created_at?: string
+          email?: string | null
           id?: string
           password_hash?: string | null
           real_name?: string
@@ -116,6 +119,36 @@ export type Database = {
         }
         Relationships: []
       }
+      password_reset_otps: {
+        Row: {
+          attempts: number
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          otp_hash: string
+          used_at: string | null
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          email: string
+          expires_at: string
+          id?: string
+          otp_hash: string
+          used_at?: string | null
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          otp_hash?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
       support_messages: {
         Row: {
           created_at: string
@@ -170,6 +203,7 @@ export type Database = {
         Returns: {
           badges: Json
           created_at: string
+          email: string | null
           id: string
           password_hash: string | null
           real_name: string
@@ -186,26 +220,68 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      register_account: {
-        Args: { p_password: string; p_real_name: string; p_username: string }
-        Returns: {
-          badges: Json
-          created_at: string
-          id: string
-          password_hash: string | null
-          real_name: string
-          role: string
-          score: number
-          title: string
-          updated_at: string
-          username: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "accounts"
-          isOneToOne: true
-          isSetofReturn: false
-        }
+      register_account:
+        | {
+            Args: {
+              p_password: string
+              p_real_name: string
+              p_username: string
+            }
+            Returns: {
+              badges: Json
+              created_at: string
+              email: string | null
+              id: string
+              password_hash: string | null
+              real_name: string
+              role: string
+              score: number
+              title: string
+              updated_at: string
+              username: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "accounts"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: {
+              p_email?: string
+              p_password: string
+              p_real_name: string
+              p_username: string
+            }
+            Returns: {
+              badges: Json
+              created_at: string
+              email: string | null
+              id: string
+              password_hash: string | null
+              real_name: string
+              role: string
+              score: number
+              title: string
+              updated_at: string
+              username: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "accounts"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+      request_password_reset_otp: { Args: { p_email: string }; Returns: string }
+      set_account_email: {
+        Args: { p_email: string; p_user_id: string }
+        Returns: boolean
+      }
+      verify_otp_and_reset: {
+        Args: { p_email: string; p_new_password: string; p_otp: string }
+        Returns: boolean
       }
     }
     Enums: {
