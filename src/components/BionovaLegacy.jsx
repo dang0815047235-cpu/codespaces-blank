@@ -1565,28 +1565,35 @@ export default function App() {
                             if (option === quizOrder[quizIndex].answer) btnStyle = "bg-emerald-500/20 border-emerald-500 text-emerald-400 font-bold";
                             else if (option === selectedAnswer) btnStyle = "bg-rose-500/20 border-rose-500 text-rose-400";
                             else btnStyle = "bg-slate-950/40 border-slate-900 text-slate-600 opacity-60";
+                          } else if (aiSolveUsed) {
+                            btnStyle = "bg-slate-950/40 border-slate-900 text-slate-600 opacity-50 cursor-not-allowed";
                           }
                           return (
-                            <button key={idx} onClick={() => handleOptionSelect(option)} disabled={isAnswered} className={`w-full p-4 rounded-xl text-left border text-xs sm:text-sm transition-all ${btnStyle}`}>
+                            <button key={idx} onClick={() => handleOptionSelect(option)} disabled={isAnswered || aiSolveUsed} className={`w-full p-4 rounded-xl text-left border text-xs sm:text-sm transition-all ${btnStyle}`}>
                               {option}
                             </button>
                           );
                         })}
                       </div>
-                      {isAnswered && (
+                      {aiSolveUsed && !isAnswered && (
+                        <div className="text-[11px] text-amber-300 bg-amber-500/10 border border-amber-500/30 p-2 rounded-lg">
+                          🔒 Bạn đã nhờ AI giải câu này — không thể chọn đáp án nữa. Nhấn <b>Tiếp tục</b> để sang câu tiếp theo.
+                        </div>
+                      )}
+                      {(isAnswered || aiSolveUsed) && (
                         <div className="flex justify-end pt-2">
                           <button onClick={handleNextQuestion} className="px-5 py-2 rounded-xl bg-gradient-to-r from-teal-400 to-indigo-500 text-slate-950 text-xs font-bold shadow-lg">
-                            {quizIndex === quizOrder.length - 1 ? "Xem Tổng Kết Điểm" : "Câu Tiếp Theo →"}
+                            {quizIndex === quizOrder.length - 1 ? "Xem Tổng Kết Điểm" : (aiSolveUsed && !isAnswered ? "Tiếp tục →" : "Câu Tiếp Theo →")}
                           </button>
                         </div>
                       )}
                       <div className="pt-2 border-t border-slate-800 space-y-2">
                         <button
                           onClick={handleAiSolveQuiz}
-                          disabled={aiQuizLoading}
+                          disabled={aiQuizLoading || aiSolveUsed || isAnswered}
                           className="w-full px-4 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/40 text-indigo-300 text-xs font-bold hover:bg-indigo-500/20 transition-all disabled:opacity-50"
                         >
-                          {aiQuizLoading ? '🧠 AI đang suy luận...' : '🧠 Nhờ AI giải câu này'}
+                          {aiQuizLoading ? '🧠 AI đang suy luận...' : (aiSolveUsed ? '✅ Đã nhờ AI giải' : '🧠 Nhờ AI giải câu này (sẽ khoá câu này)')}
                         </button>
                         {aiQuizHint && (
                           <div className="p-3 rounded-xl bg-slate-950 border border-indigo-500/30 text-xs text-slate-200 leading-relaxed">
