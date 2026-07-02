@@ -987,6 +987,7 @@ export default function App() {
       setSelectedAnswer(null);
       setIsAnswered(false);
       setAiQuizHint('');
+      setAiSolveUsed(false);
     } else {
       setQuizComplete(true);
     }
@@ -1000,6 +1001,7 @@ export default function App() {
     setScore(0);
     setQuizComplete(false);
     setAiQuizHint('');
+    setAiSolveUsed(false);
   };
 
   // 🧠 AI giải quyết câu hỏi quiz hiện tại
