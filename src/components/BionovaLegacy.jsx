@@ -637,8 +637,10 @@ export default function App() {
       if (!realName) { setAuthError('Vui lòng nhập tên thật'); return; }
       if (pwd.length < 6) { setAuthError('Mật khẩu tối thiểu 6 ký tự'); return; }
       if (!/^[a-z0-9_]{3,24}$/.test(uname)) { setAuthError('Username 3-24 ký tự (chữ thường, số, _)'); return; }
+      const email = emailInput.trim().toLowerCase();
+      if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { setAuthError('Email không hợp lệ (bắt buộc để lấy lại mật khẩu)'); return; }
       const { data: inserted, error } = await supabase.rpc('register_account', {
-        p_username: uname, p_real_name: realName, p_password: pwd,
+        p_username: uname, p_real_name: realName, p_password: pwd, p_email: email,
       });
       if (error) { setAuthError('Đăng ký lỗi: ' + error.message); return; }
       const user = { ...inserted, badges: Array.isArray(inserted.badges) ? inserted.badges : ['🧫'] };
@@ -657,8 +659,75 @@ export default function App() {
       setCurrentUser(user);
       setIsLoggedIn(true);
       clearFail();
+      // Nếu tài khoản cũ chưa có email → nhắc bổ sung
+      if (!user.email) {
+        setEmailPromptValue('');
+        setEmailPromptMsg(null);
+        setEmailPromptOpen(true);
+      }
     }
     setPasswordInput('');
+  };
+
+  // ================= QUÊN MẬT KHẨU (OTP qua email) =================
+  const handleRequestOtp = async () => {
+    setForgotMsg(null); setForgotDevOtp('');
+    const email = forgotEmail.trim().toLowerCase();
+    if (!email) { setForgotMsg({ type:'err', text:'Vui lòng nhập email' }); return; }
+    setForgotLoading(true);
+    try {
+      const { data, error } = await supabase.rpc('request_password_reset_otp', { p_email: email });
+      if (error) throw error;
+      // TODO: khi có RESEND_API_KEY, gọi edge function để gửi email thay vì hiển thị dev-mode
+      setForgotDevOtp(String(data || ''));
+      setForgotStep(2);
+      setForgotMsg({ type:'ok', text:'✅ Đã tạo mã OTP. Vui lòng kiểm tra email (hoặc dùng mã dev bên dưới trong khi chưa cấu hình email service).' });
+    } catch (err) {
+      setForgotMsg({ type:'err', text: err?.message || 'Không thể gửi OTP' });
+    } finally { setForgotLoading(false); }
+  };
+  const handleVerifyOtp = async () => {
+    setForgotMsg(null);
+    const otp = forgotOtp.trim();
+    if (!/^\d{6}$/.test(otp)) { setForgotMsg({ type:'err', text:'OTP phải là 6 chữ số' }); return; }
+    if (forgotNewPwd.length < 6) { setForgotMsg({ type:'err', text:'Mật khẩu mới tối thiểu 6 ký tự' }); return; }
+    setForgotLoading(true);
+    try {
+      const { data, error } = await supabase.rpc('verify_otp_and_reset', {
+        p_email: forgotEmail.trim().toLowerCase(), p_otp: otp, p_new_password: forgotNewPwd,
+      });
+      if (error) throw error;
+      if (data === true) {
+        setForgotMsg({ type:'ok', text:'✅ Đổi mật khẩu thành công! Vui lòng đăng nhập lại.' });
+        setTimeout(() => {
+          setForgotOpen(false); setForgotStep(1); setForgotEmail(''); setForgotOtp('');
+          setForgotNewPwd(''); setForgotDevOtp(''); setForgotMsg(null);
+          setAuthMode('login');
+        }, 1500);
+      }
+    } catch (err) {
+      setForgotMsg({ type:'err', text: err?.message || 'Xác thực thất bại' });
+    } finally { setForgotLoading(false); }
+  };
+
+  // Bổ sung email cho tài khoản cũ
+  const handleSetEmail = async () => {
+    setEmailPromptMsg(null);
+    const email = emailPromptValue.trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      setEmailPromptMsg({ type:'err', text:'Email không hợp lệ' }); return;
+    }
+    try {
+      const { error } = await supabase.rpc('set_account_email', { p_user_id: currentUser.id, p_email: email });
+      if (error) throw error;
+      const updated = { ...currentUser, email };
+      setCurrentUser(updated);
+      localStorage.setItem('biotech_current_user', JSON.stringify(updated));
+      setEmailPromptMsg({ type:'ok', text:'✅ Đã lưu email. Bây giờ bạn có thể lấy lại mật khẩu qua email này.' });
+      setTimeout(() => setEmailPromptOpen(false), 1200);
+    } catch (err) {
+      setEmailPromptMsg({ type:'err', text: err?.message || 'Không lưu được email' });
+    }
   };
 
   const handleUpdateNickname = async (newName) => {
