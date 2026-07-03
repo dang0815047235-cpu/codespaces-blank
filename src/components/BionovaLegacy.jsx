@@ -420,6 +420,19 @@ export default function App() {
   const [uploadingMusic, setUploadingMusic] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
 
+  // 📈 Lịch sử điểm để vẽ biểu đồ tiến bộ (Duolingo-style progress)
+  const [scoreHistory, setScoreHistory] = useState([]);
+  const loadScoreHistory = async (uid) => {
+    if (!uid) return;
+    const { data } = await supabase
+      .from('score_history')
+      .select('score, created_at')
+      .eq('user_id', uid)
+      .order('created_at', { ascending: true })
+      .limit(200);
+    if (data) setScoreHistory(data);
+  };
+
   // Hàm load settings từ Supabase
   const loadSettings = async () => {
     const { data } = await supabase.from('app_settings').select('*').eq('id', 1).maybeSingle();
