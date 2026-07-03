@@ -690,12 +690,20 @@ export default function App() {
     if (!email) { setForgotMsg({ type:'err', text:'Vui lòng nhập email' }); return; }
     setForgotLoading(true);
     try {
-      const { data, error } = await supabase.rpc('request_password_reset_otp', { p_email: email });
-      if (error) throw error;
-      // TODO: khi có RESEND_API_KEY, gọi edge function để gửi email thay vì hiển thị dev-mode
-      setForgotDevOtp(String(data || ''));
+      const res = await fetch('/api/public/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const body = await res.json();
+      if (!res.ok || body?.error) throw new Error(body?.error || 'Không gửi được OTP');
+      if (body?.devOtp) {
+        setForgotDevOtp(String(body.devOtp));
+        setForgotMsg({ type:'ok', text:'⚠️ Email service chưa gửi được — dùng tạm mã dev bên dưới. ' + (body.warning || '') });
+      } else {
+        setForgotMsg({ type:'ok', text:'✅ Đã gửi OTP đến email của bạn. Vui lòng kiểm tra hộp thư (kể cả Spam).' });
+      }
       setForgotStep(2);
-      setForgotMsg({ type:'ok', text:'✅ Đã tạo mã OTP. Vui lòng kiểm tra email (hoặc dùng mã dev bên dưới trong khi chưa cấu hình email service).' });
     } catch (err) {
       setForgotMsg({ type:'err', text: err?.message || 'Không thể gửi OTP' });
     } finally { setForgotLoading(false); }
