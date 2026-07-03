@@ -842,6 +842,11 @@ export default function App() {
     await supabase.from('accounts')
       .update({ score: maxScore, title: newTitle, badges: updatedBadges, updated_at: new Date().toISOString() })
       .eq('id', currentUser.id);
+    // Ghi lại lịch sử điểm để vẽ biểu đồ tiến bộ
+    try {
+      await supabase.from('score_history').insert({ user_id: currentUser.id, score: maxScore });
+      loadScoreHistory(currentUser.id);
+    } catch {}
     loadLeaderboard();
   };
 
