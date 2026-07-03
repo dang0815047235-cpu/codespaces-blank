@@ -489,6 +489,7 @@ export default function App() {
         const u = JSON.parse(sessionUser);
         setCurrentUser(u);
         setIsLoggedIn(true);
+        loadScoreHistory(u.id);
       } catch {}
     }
     return () => {
