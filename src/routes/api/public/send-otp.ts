@@ -45,7 +45,16 @@ export const Route = createFileRoute('/api/public/send-otp')({
           });
           if (!sendRes.ok) {
             const body = await sendRes.text();
-            return new Response(JSON.stringify({ ok: true, devOtp: String(otp), warning: 'Không gửi được email: ' + body }), { status: 200 });
+            let friendly = 'Email service chưa được cấu hình domain. Dùng mã bên dưới để đặt lại mật khẩu.';
+            try {
+              const j = JSON.parse(body);
+              if (j?.statusCode === 403 && String(j?.message || '').includes('testing emails')) {
+                friendly = 'Hệ thống email đang ở chế độ thử nghiệm (chưa verify domain). Dùng mã OTP bên dưới để đặt lại mật khẩu ngay.';
+              } else if (j?.message) {
+                friendly = 'Không gửi được email: ' + j.message;
+              }
+            } catch {}
+            return new Response(JSON.stringify({ ok: true, devOtp: String(otp), warning: friendly }), { status: 200 });
           }
           return new Response(JSON.stringify({ ok: true }), { status: 200 });
         } catch (e: any) {
