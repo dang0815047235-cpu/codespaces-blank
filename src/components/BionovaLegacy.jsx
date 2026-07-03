@@ -1717,6 +1717,99 @@ export default function App() {
               {/* TAB 5: HỒ SƠ & TOÀN BỘ 30 DANH HIỆU/HUY HIỆU ĐỒ SỘ */}
               {activeTab === 'settings' && (
                 <div className="space-y-6">
+                  {/* 🌈 DUOLINGO-STYLE: HÀNH TRÌNH TIẾN HOÁ */}
+                  {(() => {
+                    const score = currentUser?.score || 0;
+                    const path = TITLES_LIST;
+                    const currentIdx = (() => {
+                      let idx = 0;
+                      for (let i = 0; i < path.length; i++) if (score >= path[i].min) idx = i;
+                      return idx;
+                    })();
+                    return (
+                      <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-teal-900/20 border border-teal-500/30 rounded-2xl p-6 animate-fade-in">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-base font-extrabold text-teal-300 flex items-center gap-2">🌿 Hành Trình Tiến Hoá Của Bạn</h3>
+                          <span className="text-[11px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-1 rounded-full">
+                            {isAdmin ? 'ADMIN — Toàn quyền' : `${score}/90 điểm`}
+                          </span>
+                        </div>
+                        <div className="relative">
+                          <div className="flex gap-3 overflow-x-auto pb-3 snap-x">
+                            {path.map((t, i) => {
+                              const reached = isAdmin || score >= t.min;
+                              const isCurrent = !isAdmin && i === currentIdx;
+                              const isChosen = currentUser?.title === t.name;
+                              return (
+                                <button
+                                  key={t.name}
+                                  disabled={!reached || isChosen}
+                                  onClick={() => handleSelectTitle(t.name)}
+                                  className={`snap-start flex-shrink-0 w-24 rounded-2xl border-2 p-2.5 flex flex-col items-center gap-1 transition-all ${
+                                    isChosen ? 'border-amber-400 bg-amber-500/[0.12] scale-105 shadow-lg shadow-amber-500/20' :
+                                    isCurrent ? 'border-teal-400 bg-teal-500/[0.15] scale-105 animate-pulse' :
+                                    reached ? 'border-emerald-500/60 bg-emerald-500/[0.06] hover:scale-105 cursor-pointer' :
+                                    'border-slate-800 bg-slate-950 opacity-40'
+                                  }`}
+                                  title={t.desc}
+                                >
+                                  <div className={`w-11 h-11 rounded-full flex items-center justify-center text-lg font-black ${reached ? 'bg-gradient-to-br from-teal-400 to-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-500'}`}>
+                                    {reached ? '★' : '🔒'}
+                                  </div>
+                                  <p className="text-[10px] font-extrabold text-center text-slate-200 leading-tight line-clamp-2">{t.name}</p>
+                                  <span className="text-[9px] text-slate-500 font-mono">{t.min}+ đ</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        <p className="text-[10px] text-slate-500 mt-3 italic">👉 Nhấp vào một nấc thang đã mở khoá để đặt làm danh hiệu hiển thị.</p>
+                      </div>
+                    );
+                  })()}
+
+                  {/* 📈 BIỂU ĐỒ TIẾN BỘ (LINE CHART SVG) */}
+                  {(() => {
+                    const data = scoreHistory.length > 0
+                      ? scoreHistory
+                      : [{ score: 0, created_at: new Date().toISOString() }, { score: currentUser?.score || 0, created_at: new Date().toISOString() }];
+                    const W = 600, H = 160, PAD = 24;
+                    const maxY = Math.max(90, ...data.map(d => d.score));
+                    const points = data.map((d, i) => {
+                      const x = PAD + (i * (W - 2 * PAD)) / Math.max(1, data.length - 1);
+                      const y = H - PAD - (d.score / maxY) * (H - 2 * PAD);
+                      return `${x.toFixed(1)},${y.toFixed(1)}`;
+                    }).join(' ');
+                    const lastX = PAD + ((data.length - 1) * (W - 2 * PAD)) / Math.max(1, data.length - 1);
+                    const lastY = H - PAD - ((data[data.length - 1]?.score || 0) / maxY) * (H - 2 * PAD);
+                    return (
+                      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 animate-fade-in">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-base font-bold text-slate-100">📈 Sơ Đồ Tiến Bộ Học Viên</h3>
+                          <span className="text-[10px] text-slate-500">{data.length} lần cập nhật</span>
+                        </div>
+                        <div className="w-full overflow-x-auto">
+                          <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-40 min-w-[300px]">
+                            <defs>
+                              <linearGradient id="chartGrad" x1="0" x2="0" y1="0" y2="1">
+                                <stop offset="0%" stopColor="#2dd4bf" stopOpacity="0.4" />
+                                <stop offset="100%" stopColor="#2dd4bf" stopOpacity="0" />
+                              </linearGradient>
+                            </defs>
+                            {[0, 0.25, 0.5, 0.75, 1].map(f => (
+                              <line key={f} x1={PAD} x2={W - PAD} y1={H - PAD - f * (H - 2 * PAD)} y2={H - PAD - f * (H - 2 * PAD)} stroke="#1e293b" strokeWidth="1" strokeDasharray="2 3" />
+                            ))}
+                            <polygon points={`${PAD},${H - PAD} ${points} ${W - PAD},${H - PAD}`} fill="url(#chartGrad)" />
+                            <polyline points={points} fill="none" stroke="#2dd4bf" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+                            <circle cx={lastX} cy={lastY} r="5" fill="#f59e0b" stroke="#0f172a" strokeWidth="2" />
+                            <text x={W - PAD} y={12} textAnchor="end" fill="#64748b" fontSize="10">Max: {maxY}đ</text>
+                          </svg>
+                        </div>
+                        <p className="text-[10px] text-slate-500 mt-1 italic">Điểm cao nhất mỗi lần bạn hoàn thành quiz sẽ được ghi lại ở đây.</p>
+                      </div>
+                    );
+                  })()}
+
                   {/* DANH SÁCH 15 HUY HIỆU */}
                   <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
                     <h3 className="text-base font-bold text-slate-100 border-b border-slate-800 pb-3 mb-4">
