@@ -346,7 +346,7 @@ export default function App() {
   const [forgotNewPwd, setForgotNewPwd] = useState('');
   const [forgotMsg, setForgotMsg] = useState(null); // {type, text}
   const [forgotLoading, setForgotLoading] = useState(false);
-  const [forgotDevOtp, setForgotDevOtp] = useState(''); // hiển thị nếu chưa gửi email
+  const [forgotDevOtp, setForgotDevOtp] = useState(''); // kept for compatibility; no longer used
   // Nhắc bổ sung email cho tài khoản cũ
   const [emailPromptOpen, setEmailPromptOpen] = useState(false);
   const [emailPromptValue, setEmailPromptValue] = useState('');
@@ -690,19 +690,21 @@ export default function App() {
     if (!email) { setForgotMsg({ type:'err', text:'Vui lòng nhập email' }); return; }
     setForgotLoading(true);
     try {
-      const res = await fetch('/api/public/send-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: true },
       });
-      const body = await res.json();
-      if (!res.ok || body?.error) throw new Error(body?.error || 'Không gửi được OTP');
-      if (body?.devOtp) {
-        setForgotDevOtp(String(body.devOtp));
-        setForgotMsg({ type:'ok', text:'⚠️ Email service chưa gửi được — dùng tạm mã dev bên dưới. ' + (body.warning || '') });
-      } else {
-        setForgotMsg({ type:'ok', text:'✅ Đã gửi OTP đến email của bạn. Vui lòng kiểm tra hộp thư (kể cả Spam).' });
+      if (error) {
+        const m = String(error.message || '').toLowerCase();
+        if (m.includes('rate') || m.includes('limit')) {
+          throw new Error('Bạn yêu cầu quá nhiều lần. Vui lòng đợi vài phút rồi thử lại.');
+        }
+        if (m.includes('invalid') && m.includes('email')) {
+          throw new Error('Email không hợp lệ');
+        }
+        throw new Error(error.message || 'Không gửi được OTP');
       }
+      setForgotMsg({ type:'ok', text:'✅ Đã gửi mã OTP 6 số đến email. Vui lòng kiểm tra hộp thư (kể cả Spam).' });
       setForgotStep(2);
     } catch (err) {
       setForgotMsg({ type:'err', text: err?.message || 'Không thể gửi OTP' });
@@ -715,18 +717,29 @@ export default function App() {
     if (forgotNewPwd.length < 6) { setForgotMsg({ type:'err', text:'Mật khẩu mới tối thiểu 6 ký tự' }); return; }
     setForgotLoading(true);
     try {
-      const { data, error } = await supabase.rpc('verify_otp_and_reset', {
-        p_email: forgotEmail.trim().toLowerCase(), p_otp: otp, p_new_password: forgotNewPwd,
-      });
-      if (error) throw error;
-      if (data === true) {
-        setForgotMsg({ type:'ok', text:'✅ Đổi mật khẩu thành công! Vui lòng đăng nhập lại.' });
-        setTimeout(() => {
-          setForgotOpen(false); setForgotStep(1); setForgotEmail(''); setForgotOtp('');
-          setForgotNewPwd(''); setForgotDevOtp(''); setForgotMsg(null);
-          setAuthMode('login');
-        }, 1500);
+      const email = forgotEmail.trim().toLowerCase();
+      const { error: vErr } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' });
+      if (vErr) {
+        const m = String(vErr.message || '').toLowerCase();
+        if (m.includes('expired')) throw new Error('Mã OTP đã hết hạn. Vui lòng gửi lại.');
+        throw new Error('Mã OTP không đúng');
       }
+      const { error: rErr } = await supabase.rpc('reset_password_by_verified_email', {
+        p_new_password: forgotNewPwd,
+      });
+      // Dọn session tạm của Supabase (app dùng session riêng)
+      try { await supabase.auth.signOut(); } catch {}
+      if (rErr) {
+        const m = String(rErr.message || '');
+        if (m.includes('Không tìm thấy')) throw new Error('Không tìm thấy tài khoản với email này');
+        throw new Error(m || 'Không đặt lại được mật khẩu');
+      }
+      setForgotMsg({ type:'ok', text:'✅ Đổi mật khẩu thành công! Vui lòng đăng nhập lại.' });
+      setTimeout(() => {
+        setForgotOpen(false); setForgotStep(1); setForgotEmail(''); setForgotOtp('');
+        setForgotNewPwd(''); setForgotDevOtp(''); setForgotMsg(null);
+        setAuthMode('login');
+      }, 1500);
     } catch (err) {
       setForgotMsg({ type:'err', text: err?.message || 'Xác thực thất bại' });
     } finally { setForgotLoading(false); }
@@ -1288,11 +1301,6 @@ export default function App() {
                 ) : (
                   <>
                     <p className="text-xs text-slate-400">Nhập mã OTP đã nhận và mật khẩu mới.</p>
-                    {forgotDevOtp && (
-                      <div className="text-[11px] text-amber-300 bg-amber-500/10 border border-amber-500/30 p-2 rounded-lg">
-                        🧪 <b>Dev mode</b>: Email service chưa cấu hình. Mã OTP của bạn: <code className="font-mono text-base tracking-widest">{forgotDevOtp}</code>
-                      </div>
-                    )}
                     <input type="text" inputMode="numeric" maxLength={6} value={forgotOtp} onChange={(e)=>setForgotOtp(e.target.value.replace(/\D/g,''))}
                       placeholder="000000" className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-lg font-mono tracking-[0.5em] text-center text-slate-100 focus:outline-none" />
                     <input type="password" value={forgotNewPwd} onChange={(e)=>setForgotNewPwd(e.target.value)} placeholder="Mật khẩu mới (≥6 ký tự)"
