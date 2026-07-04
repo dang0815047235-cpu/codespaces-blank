@@ -1735,7 +1735,7 @@ export default function App() {
                       return idx;
                     })();
                     return (
-                      <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-teal-900/20 border border-teal-500/30 rounded-2xl p-6 animate-fade-in">
+                      <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-teal-900/20 border border-teal-500/30 rounded-2xl p-6 animate-fade-in overflow-hidden">
                         <div className="flex items-center justify-between mb-4">
                           <h3 className="text-base font-extrabold text-teal-300 flex items-center gap-2">🌿 Hành Trình Tiến Hoá Của Bạn</h3>
                           <span className="text-[11px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-1 rounded-full">
@@ -1743,7 +1743,7 @@ export default function App() {
                           </span>
                         </div>
                         <div className="relative">
-                          <div className="flex gap-3 overflow-x-auto pb-3 snap-x">
+                          <div className="flex gap-3 overflow-x-auto overflow-y-hidden py-3 px-1 snap-x">
                             {path.map((t, i) => {
                               const reached = isAdmin || score >= t.min;
                               const isCurrent = !isAdmin && i === currentIdx;
@@ -1753,19 +1753,19 @@ export default function App() {
                                   key={t.name}
                                   disabled={!reached || isChosen}
                                   onClick={() => handleSelectTitle(t.name)}
-                                  className={`snap-start flex-shrink-0 w-24 rounded-2xl border-2 p-2.5 flex flex-col items-center gap-1 transition-all ${
-                                    isChosen ? 'border-amber-400 bg-amber-500/[0.12] scale-105 shadow-lg shadow-amber-500/20' :
-                                    isCurrent ? 'border-teal-400 bg-teal-500/[0.15] scale-105 animate-pulse' :
-                                    reached ? 'border-emerald-500/60 bg-emerald-500/[0.06] hover:scale-105 cursor-pointer' :
-                                    'border-slate-800 bg-slate-950 opacity-40'
+                                  className={`snap-start flex-shrink-0 w-28 rounded-2xl border-2 p-3 flex flex-col items-center gap-1.5 transition-colors ${
+                                    isChosen ? 'border-amber-400 bg-amber-500/20 shadow-lg shadow-amber-500/20 ring-2 ring-amber-300/40' :
+                                    isCurrent ? 'border-teal-400 bg-teal-500/20 ring-2 ring-teal-300/40' :
+                                    reached ? 'border-emerald-500/60 bg-emerald-500/10 hover:bg-emerald-500/20 cursor-pointer' :
+                                    'border-slate-800 bg-slate-950 opacity-50'
                                   }`}
                                   title={t.desc}
                                 >
-                                  <div className={`w-11 h-11 rounded-full flex items-center justify-center text-lg font-black ${reached ? 'bg-gradient-to-br from-teal-400 to-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-500'}`}>
+                                  <div className={`w-11 h-11 rounded-full flex items-center justify-center text-lg font-black shrink-0 ${reached ? 'bg-gradient-to-br from-teal-400 to-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-500'}`}>
                                     {reached ? '★' : '🔒'}
                                   </div>
-                                  <p className="text-[10px] font-extrabold text-center text-slate-200 leading-tight line-clamp-2">{t.name}</p>
-                                  <span className="text-[9px] text-slate-500 font-mono">{t.min}+ đ</span>
+                                  <p className="text-xs font-bold text-center text-slate-50 leading-snug line-clamp-2 min-h-[2.25rem] break-words">{t.name}</p>
+                                  <span className="text-[10px] text-slate-300 font-mono">{t.min}+ đ</span>
                                 </button>
                               );
                             })}
