@@ -346,7 +346,6 @@ export default function App() {
   const [forgotNewPwd, setForgotNewPwd] = useState('');
   const [forgotMsg, setForgotMsg] = useState(null); // {type, text}
   const [forgotLoading, setForgotLoading] = useState(false);
-  const [forgotDevOtp, setForgotDevOtp] = useState(''); // kept for compatibility; no longer used
   // Nhắc bổ sung email cho tài khoản cũ
   const [emailPromptOpen, setEmailPromptOpen] = useState(false);
   const [emailPromptValue, setEmailPromptValue] = useState('');
@@ -685,7 +684,7 @@ export default function App() {
 
   // ================= QUÊN MẬT KHẨU (OTP qua email) =================
   const handleRequestOtp = async () => {
-    setForgotMsg(null); setForgotDevOtp('');
+    setForgotMsg(null);
     const email = forgotEmail.trim().toLowerCase();
     if (!email) { setForgotMsg({ type:'err', text:'Vui lòng nhập email' }); return; }
     setForgotLoading(true);
@@ -724,7 +723,7 @@ export default function App() {
       if (vErr) {
         const m = String(vErr.message || '').toLowerCase();
         if (m.includes('expired')) throw new Error('Mã OTP đã hết hạn. Vui lòng gửi lại.');
-        throw new Error('Mã OTP không đúng');
+        throw new Error('Mã OTP không đúng hoặc đã hết hạn');
       }
       const { error: rErr } = await supabase.rpc('reset_password_by_verified_email', {
         p_new_password: forgotNewPwd,
@@ -739,7 +738,7 @@ export default function App() {
       setForgotMsg({ type:'ok', text:'✅ Đổi mật khẩu thành công! Vui lòng đăng nhập lại.' });
       setTimeout(() => {
         setForgotOpen(false); setForgotStep(1); setForgotEmail(''); setForgotOtp('');
-        setForgotNewPwd(''); setForgotDevOtp(''); setForgotMsg(null);
+        setForgotNewPwd(''); setForgotMsg(null);
         setAuthMode('login');
       }, 1500);
     } catch (err) {
@@ -1273,7 +1272,7 @@ export default function App() {
               {authMode==='register'?'Tạo Tài Khoản & Vào Hệ Thống':'Đăng Nhập'}
             </button>
             {authMode === 'login' && (
-              <button type="button" onClick={() => { setForgotOpen(true); setForgotStep(1); setForgotEmail(''); setForgotOtp(''); setForgotNewPwd(''); setForgotMsg(null); setForgotDevOtp(''); }}
+              <button type="button" onClick={() => { setForgotOpen(true); setForgotStep(1); setForgotEmail(''); setForgotOtp(''); setForgotNewPwd(''); setForgotMsg(null); }}
                 className="w-full text-[11px] text-teal-400 hover:text-teal-300 font-semibold underline underline-offset-2">
                 Quên mật khẩu?
               </button>
@@ -1292,7 +1291,7 @@ export default function App() {
                 </div>
                 {forgotStep === 1 ? (
                   <>
-                    <p className="text-xs text-slate-400 leading-relaxed">Nhập email đã đăng ký. Hệ thống sẽ gửi mã OTP 6 chữ số qua email cho bạn. Không dùng link Verify Email.</p>
+                    <p className="text-xs text-slate-400 leading-relaxed">Nhập email đã đăng ký. Hệ thống sẽ gửi mã OTP 6 chữ số qua email cho bạn. Không dùng Verify Email hoặc magic link.</p>
                     <input type="email" value={forgotEmail} onChange={(e)=>setForgotEmail(e.target.value)} placeholder="you@example.com"
                       className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-sm text-slate-100 focus:outline-none placeholder-slate-600" />
                     <button onClick={handleRequestOtp} disabled={forgotLoading}
@@ -1302,13 +1301,13 @@ export default function App() {
                   </>
                 ) : (
                   <>
-                    <p className="text-xs text-slate-400">Nhập mã OTP 6 chữ số bạn vừa nhận và mật khẩu mới.</p>
+                    <p className="text-xs text-slate-400">Nhập đúng mã OTP 6 chữ số bạn vừa nhận qua email và đặt mật khẩu mới.</p>
                     <input type="text" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={forgotOtp} onChange={(e)=>setForgotOtp(e.target.value.replace(/\D/g,''))}
                       placeholder="000000" className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-lg font-mono tracking-[0.5em] text-center text-slate-100 focus:outline-none" />
                     <input type="password" value={forgotNewPwd} onChange={(e)=>setForgotNewPwd(e.target.value)} placeholder="Mật khẩu mới (≥6 ký tự)"
                       className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-sm text-slate-100 focus:outline-none placeholder-slate-600" />
                     <div className="flex gap-2">
-                      <button onClick={() => { setForgotStep(1); setForgotOtp(''); setForgotNewPwd(''); setForgotDevOtp(''); setForgotMsg(null); }}
+                      <button onClick={() => { setForgotStep(1); setForgotOtp(''); setForgotNewPwd(''); setForgotMsg(null); }}
                         className="flex-1 bg-slate-800 border border-slate-700 text-slate-300 font-bold text-xs py-2.5 rounded-xl">← Gửi lại OTP</button>
                       <button onClick={handleVerifyOtp} disabled={forgotLoading}
                         className="flex-1 bg-gradient-to-r from-teal-400 to-indigo-500 text-slate-950 font-bold text-xs uppercase py-2.5 rounded-xl disabled:opacity-50">
