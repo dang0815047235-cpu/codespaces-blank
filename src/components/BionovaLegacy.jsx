@@ -705,6 +705,8 @@ export default function App() {
         throw new Error(error.message || 'Không gửi được OTP');
       }
       setForgotMsg({ type:'ok', text:'✅ Đã gửi mã OTP 6 số đến email. Vui lòng kiểm tra hộp thư (kể cả Spam).' });
+      setForgotOtp('');
+      setForgotNewPwd('');
       setForgotStep(2);
     } catch (err) {
       setForgotMsg({ type:'err', text: err?.message || 'Không thể gửi OTP' });
@@ -1271,7 +1273,7 @@ export default function App() {
               {authMode==='register'?'Tạo Tài Khoản & Vào Hệ Thống':'Đăng Nhập'}
             </button>
             {authMode === 'login' && (
-              <button type="button" onClick={() => { setForgotOpen(true); setForgotStep(1); setForgotMsg(null); setForgotDevOtp(''); }}
+              <button type="button" onClick={() => { setForgotOpen(true); setForgotStep(1); setForgotEmail(''); setForgotOtp(''); setForgotNewPwd(''); setForgotMsg(null); setForgotDevOtp(''); }}
                 className="w-full text-[11px] text-teal-400 hover:text-teal-300 font-semibold underline underline-offset-2">
                 Quên mật khẩu?
               </button>
@@ -1290,7 +1292,7 @@ export default function App() {
                 </div>
                 {forgotStep === 1 ? (
                   <>
-                    <p className="text-xs text-slate-400 leading-relaxed">Nhập email đã đăng ký. Chúng tôi sẽ gửi mã OTP 6 chữ số về hộp thư của bạn (hiệu lực 10 phút).</p>
+                    <p className="text-xs text-slate-400 leading-relaxed">Nhập email đã đăng ký. Hệ thống sẽ gửi mã OTP 6 chữ số qua email cho bạn. Không dùng link Verify Email.</p>
                     <input type="email" value={forgotEmail} onChange={(e)=>setForgotEmail(e.target.value)} placeholder="you@example.com"
                       className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-sm text-slate-100 focus:outline-none placeholder-slate-600" />
                     <button onClick={handleRequestOtp} disabled={forgotLoading}
@@ -1300,8 +1302,8 @@ export default function App() {
                   </>
                 ) : (
                   <>
-                    <p className="text-xs text-slate-400">Nhập mã OTP đã nhận và mật khẩu mới.</p>
-                    <input type="text" inputMode="numeric" maxLength={6} value={forgotOtp} onChange={(e)=>setForgotOtp(e.target.value.replace(/\D/g,''))}
+                    <p className="text-xs text-slate-400">Nhập mã OTP 6 chữ số bạn vừa nhận và mật khẩu mới.</p>
+                    <input type="text" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={forgotOtp} onChange={(e)=>setForgotOtp(e.target.value.replace(/\D/g,''))}
                       placeholder="000000" className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-lg font-mono tracking-[0.5em] text-center text-slate-100 focus:outline-none" />
                     <input type="password" value={forgotNewPwd} onChange={(e)=>setForgotNewPwd(e.target.value)} placeholder="Mật khẩu mới (≥6 ký tự)"
                       className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-sm text-slate-100 focus:outline-none placeholder-slate-600" />
