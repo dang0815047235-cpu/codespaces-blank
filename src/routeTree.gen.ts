@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
-import { Route as ApiPublicSendOtpRouteImport } from './routes/api/public/send-otp'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -23,40 +22,31 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicSendOtpRoute = ApiPublicSendOtpRouteImport.update({
-  id: '/api/public/send-otp',
-  path: '/api/public/send-otp',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/chat': typeof ApiChatRoute
-  '/api/public/send-otp': typeof ApiPublicSendOtpRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/chat': typeof ApiChatRoute
-  '/api/public/send-otp': typeof ApiPublicSendOtpRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/chat': typeof ApiChatRoute
-  '/api/public/send-otp': typeof ApiPublicSendOtpRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/chat' | '/api/public/send-otp'
+  fullPaths: '/' | '/api/chat'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/chat' | '/api/public/send-otp'
-  id: '__root__' | '/' | '/api/chat' | '/api/public/send-otp'
+  to: '/' | '/api/chat'
+  id: '__root__' | '/' | '/api/chat'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiChatRoute: typeof ApiChatRoute
-  ApiPublicSendOtpRoute: typeof ApiPublicSendOtpRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,20 +65,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/send-otp': {
-      id: '/api/public/send-otp'
-      path: '/api/public/send-otp'
-      fullPath: '/api/public/send-otp'
-      preLoaderRoute: typeof ApiPublicSendOtpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiChatRoute: ApiChatRoute,
-  ApiPublicSendOtpRoute: ApiPublicSendOtpRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
