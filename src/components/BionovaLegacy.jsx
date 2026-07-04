@@ -703,7 +703,7 @@ export default function App() {
         }
         throw new Error(error.message || 'Không gửi được OTP');
       }
-      setForgotMsg({ type:'ok', text:'✅ Đã gửi mã OTP 6 số đến email. Vui lòng kiểm tra hộp thư (kể cả Spam).' });
+      setForgotMsg({ type:'ok', text:'✅ Đã gửi mã OTP khôi phục đến email. Vui lòng kiểm tra hộp thư (kể cả Spam).' });
       setForgotOtp('');
       setForgotNewPwd('');
       setForgotStep(2);
