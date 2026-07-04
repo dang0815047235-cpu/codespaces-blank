@@ -1291,7 +1291,7 @@ export default function App() {
                 </div>
                 {forgotStep === 1 ? (
                   <>
-                    <p className="text-xs text-slate-400 leading-relaxed">Nhập email đã đăng ký. Hệ thống sẽ gửi mã OTP 6 chữ số qua email cho bạn. Không dùng Verify Email hoặc magic link.</p>
+                    <p className="text-xs text-slate-400 leading-relaxed">Nhập email đã đăng ký. Hệ thống sẽ gửi mã OTP 6 chữ số qua email cho bạn. Không dùng email xác minh hoặc magic link.</p>
                     <input type="email" value={forgotEmail} onChange={(e)=>setForgotEmail(e.target.value)} placeholder="you@example.com"
                       className="w-full bg-slate-950 border border-slate-800 focus:border-teal-500 px-4 py-2.5 rounded-xl text-sm text-slate-100 focus:outline-none placeholder-slate-600" />
                     <button onClick={handleRequestOtp} disabled={forgotLoading}

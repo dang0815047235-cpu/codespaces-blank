@@ -1,7 +1,7 @@
 project_id = "tbkxvqcwhrpllmjnhxuq"
 
 [auth.email.template.confirmation]
-subject = "Mã OTP xác thực BIONOVA LEGACY"
+subject = "Mã xác minh email BIONOVA LEGACY"
 content_path = "./supabase/templates/otp.html"
 
 [auth.email.template.magic_link]
