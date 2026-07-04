@@ -303,13 +303,12 @@ export type Database = {
               isSetofReturn: false
             }
           }
-      request_password_reset_otp: { Args: { p_email: string }; Returns: string }
-      set_account_email: {
-        Args: { p_email: string; p_user_id: string }
+      reset_password_by_verified_email: {
+        Args: { p_new_password: string }
         Returns: boolean
       }
-      verify_otp_and_reset: {
-        Args: { p_email: string; p_new_password: string; p_otp: string }
+      set_account_email: {
+        Args: { p_email: string; p_user_id: string }
         Returns: boolean
       }
     }
