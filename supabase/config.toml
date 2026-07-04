@@ -1,1 +1,13 @@
 project_id = "tbkxvqcwhrpllmjnhxuq"
+
+[auth.email.template.confirmation]
+subject = "Mã OTP xác thực BIONOVA LEGACY"
+content_path = "./supabase/templates/otp.html"
+
+[auth.email.template.magic_link]
+subject = "Mã OTP đăng nhập BIONOVA LEGACY"
+content_path = "./supabase/templates/otp.html"
+
+[auth.email.template.recovery]
+subject = "Mã OTP đặt lại mật khẩu BIONOVA LEGACY"
+content_path = "./supabase/templates/otp.html"
